@@ -23,6 +23,9 @@
 FROM openjdk:11-jdk-slim-bullseye as builder
 # TODO (DP) use dpgk to add both AMD and Intel arch
 # Install tools required by FOP
+# some of these seem to have been added to distroless base in the meantime:
+# 
+
 WORKDIR /usr/local
 RUN apt-get update && apt-get install -y --no-install-recommends \
   expat \
@@ -30,7 +33,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   liblcms2-2 \
   fonts-dejavu-core
 
-FROM gcr.io/distroless/java:11-debian11
+FROM gcr.io/distroless/java11-debian11:latest
+
+# See https://blog.adoptium.net/2021/12/eclipse-temurin-linux-installers-available/
 
 # Copy over dependancies for Apache FOP, missing from gcr's JRE
 # TODO (DP): Arch specific paths e.g. /usr/lib/aarch64-linux-gnu
@@ -55,14 +60,14 @@ COPY logs /exist/logs
 
 # Build-time metadata as defined at http://label-schema.org
 # and used by autobuilder @hooks/build
-LABEL org.label-schema.build-date=${build-tstamp} \
-      org.label-schema.description="${project.description}" \
-      org.label-schema.name="existdb" \
-      org.label-schema.schema-version="1.0" \
-      org.label-schema.url="${project.url}" \
-      org.label-schema.vcs-ref=${build-commit-abbrev} \
-      org.label-schema.vcs-url="${project.scm.url}" \
-      org.label-schema.vendor="existdb"
+# LABEL org.label-schema.build-date=${build-tstamp} \
+#       org.label-schema.description="${project.description}" \
+#       org.label-schema.name="existdb" \
+#       org.label-schema.schema-version="1.0" \
+#       org.label-schema.url="${project.url}" \
+#       org.label-schema.vcs-ref=${build-commit-abbrev} \
+#       org.label-schema.vcs-url="${project.scm.url}" \
+#       org.label-schema.vendor="existdb"
 
 EXPOSE 8080 8443
 

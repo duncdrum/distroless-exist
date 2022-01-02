@@ -53,7 +53,7 @@ COPY dump/exist-distribution-5.3.1/autodeploy /exist/autodeploy
 COPY dump/exist-distribution-5.3.1/etc /exist/etc
 COPY dump/exist-distribution-5.3.1/lib /exist/lib
 COPY dump/exist-distribution-5.3.1/logs /exist/logs
-COPY log4j.xml /exist/etc
+COPY log4j2.xml /exist/etc
 
 
 # Build-time metadata as defined at http://label-schema.org

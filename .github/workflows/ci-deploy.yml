@@ -45,8 +45,8 @@ jobs:
         run: sudo apt-get install bats libsaxonb-java
 
       # ENV Checks
-      - name: Test multi-arch env
-        run: ./check-qemu-env.sh
+      # - name: Test multi-arch env
+      #   run: ./check-qemu-env.sh
 
       - name: Check local images
         run: docker image ls

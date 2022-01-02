@@ -23,7 +23,7 @@
 # FROM openjdk:11-jdk-slim-bullseye as builder
 
 # WORKDIR /usr/local
-# RUN apt-get update && apt-get install -y --no-install-recommends maven
+# RUN apt-get update && apt-get install -y --no-install-recommends maven libsaxon-java
 
 # RUN mvn -T2C clean install -DskipTests -Ddependency-check.skip=true -Ddocker=true -P skip-build-dist-archives,\!build-dist-archives,\!mac-dmg-on-mac,\!codesign-mac-dmg,\!mac-dmg-on-unix,\!installer,\!concurrency-stress-tests,\!micro-benchmarks,\!appassembler-booter
 
@@ -53,6 +53,7 @@ COPY --from=builder dump/exist-distribution-5.3.1/autodeploy /exist/autodeploy
 COPY --from=builder dump/exist-distribution-5.3.1/etc /exist/etc
 COPY --from=builder dump/exist-distribution-5.3.1/lib /exist/lib
 COPY --from=builder dump/exist-distribution-5.3.1/logs /exist/logs
+COPY log4j.xml /exist/etc
 
 
 # Build-time metadata as defined at http://label-schema.org

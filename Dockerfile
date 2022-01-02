@@ -20,42 +20,39 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-FROM openjdk:11-jdk-slim-bullseye as builder
-# TODO (DP) use dpgk to add both AMD and Intel arch
-# Install tools required by FOP
-# some of these seem to have been added to distroless base in the meantime:
-# 
+# FROM openjdk:11-jdk-slim-bullseye as builder
 
-WORKDIR /usr/local
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  expat \
-  fontconfig \
-  liblcms2-2 \
-  fonts-dejavu-core
+# WORKDIR /usr/local
+# RUN apt-get update && apt-get install -y --no-install-recommends maven
 
-FROM gcr.io/distroless/java11-debian11:latest
+# RUN mvn -T2C clean install -DskipTests -Ddependency-check.skip=true -Ddocker=true -P skip-build-dist-archives,\!build-dist-archives,\!mac-dmg-on-mac,\!codesign-mac-dmg,\!mac-dmg-on-unix,\!installer,\!concurrency-stress-tests,\!micro-benchmarks,\!appassembler-booter
+
+# FROM gcr.io/distroless/java11-debian11:latest
 
 # See https://blog.adoptium.net/2021/12/eclipse-temurin-linux-installers-available/
 
 # Copy over dependancies for Apache FOP, missing from gcr's JRE
 # TODO (DP): Arch specific paths e.g. /usr/lib/aarch64-linux-gnu
-COPY --from=builder /usr/lib/aarch64-linux-gnu/libfreetype.so.6 /usr/lib/aarch64-linux-gnu/libfreetype.so.6
-COPY --from=builder /usr/lib/aarch64-linux-gnu/liblcms2.so.2 /usr/lib/aarch64-linux-gnu/liblcms2.so.2
-COPY --from=builder /usr/lib/aarch64-linux-gnu/libpng16.so.16 /usr/lib/aarch64-linux-gnu/libpng16.so.16
-COPY --from=builder /usr/lib/aarch64-linux-gnu/libfontconfig.so.1 /usr/lib/aarch64-linux-gnu/libfontconfig.so.1
+# COPY --from=builder /usr/lib/aarch64-linux-gnu/libfreetype.so.6 /usr/lib/aarch64-linux-gnu/libfreetype.so.6
+# COPY --from=builder /usr/lib/aarch64-linux-gnu/liblcms2.so.2 /usr/lib/aarch64-linux-gnu/liblcms2.so.2
+# COPY --from=builder /usr/lib/aarch64-linux-gnu/libpng16.so.16 /usr/lib/aarch64-linux-gnu/libpng16.so.16
+# COPY --from=builder /usr/lib/aarch64-linux-gnu/libfontconfig.so.1 /usr/lib/aarch64-linux-gnu/libfontconfig.so.1
 
 # Copy dependancies for Apache Batik (used by Apache FOP to handle SVG rendering)
-COPY --from=builder /etc/fonts /etc/fonts
-COPY --from=builder /lib/aarch64-linux-gnu/libexpat.so.1 /lib/aarch64-linux-gnu/libexpat.so.1
-COPY --from=builder /usr/share/fontconfig /usr/share/fontconfig
-COPY --from=builder /usr/share/fonts/truetype/dejavu /usr/share/fonts/truetype/dejavu
+# COPY --from=builder /etc/fonts /etc/fonts
+# COPY --from=builder /lib/aarch64-linux-gnu/libexpat.so.1 /lib/aarch64-linux-gnu/libexpat.so.1
+# COPY --from=builder /usr/share/fontconfig /usr/share/fontconfig
+# COPY --from=builder /usr/share/fonts/truetype/dejavu /usr/share/fonts/truetype/dejavu 
+
+FROM gcr.io/distroless/java11-debian11:latest
+
 
 # Copy eXist-db
-COPY LICENSE /exist/LICENSE
-COPY autodeploy /exist/autodeploy
-COPY etc /exist/etc
-COPY lib /exist/lib
-COPY logs /exist/logs
+COPY --from=builder dump/exist-distribution-5.3.1/LICENSE /exist/LICENSE
+COPY --from=builder dump/exist-distribution-5.3.1/autodeploy /exist/autodeploy
+COPY --from=builder dump/exist-distribution-5.3.1/etc /exist/etc
+COPY --from=builder dump/exist-distribution-5.3.1/lib /exist/lib
+COPY --from=builder dump/exist-distribution-5.3.1/logs /exist/logs
 
 
 # Build-time metadata as defined at http://label-schema.org
@@ -77,7 +74,9 @@ ARG MAX_BROKER
 ARG JVM_MAX_RAM_PERCENTAGE
 
 ENV EXIST_HOME "/exist"
-ENV CLASSPATH=/exist/lib/${exist.uber.jar.filename}
+# ENV CLASSPATH=/exist/lib/${exist.uber.jar.filename}
+ENV CLASSPATH=/exist/lib/*
+
 
 ENV JAVA_TOOL_OPTIONS \
   -Dfile.encoding=UTF8 \
@@ -90,7 +89,7 @@ ENV JAVA_TOOL_OPTIONS \
   -Dexist.configurationFile=/exist/etc/conf.xml \
   -Djetty.home=/exist \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
-  -XX:+UseG1GC \
+  # -XX:+UseG1GC \
   -XX:+UseStringDeduplication \
   -XX:+UseContainerSupport \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0}  \

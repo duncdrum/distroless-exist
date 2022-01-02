@@ -40,3 +40,5 @@ target/
 
 # Jenv
 .java-version
+
+dump/

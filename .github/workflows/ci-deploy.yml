@@ -42,7 +42,7 @@ jobs:
           install: true
 
       - name: Install bats and Saxon
-        run: sudo apt-get install bats libsaxon-java
+        run: sudo apt-get install bats libsaxonb-java
 
       # ENV Checks
       - name: Test multi-arch env
@@ -53,7 +53,7 @@ jobs:
 
       # BUILD
       - name: Modify logging config
-        run: saxon -s:dump/exist-distribution-5.3.1/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
+        run: saxonb-xslt -s:dump/exist-distribution-5.3.1/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
 
       - name: Build and export to Docker
         uses: docker/build-push-action@v2

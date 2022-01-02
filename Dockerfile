@@ -52,7 +52,7 @@ COPY dump/exist-distribution-5.3.1/LICENSE /exist/LICENSE
 COPY dump/exist-distribution-5.3.1/autodeploy /exist/autodeploy
 COPY dump/exist-distribution-5.3.1/etc /exist/etc
 COPY dump/exist-distribution-5.3.1/lib /exist/lib
-COPY dump/exist-distribution-5.3.1/logs /exist/logs
+# COPY dump/exist-distribution-5.3.1/logs /exist/logs
 COPY log4j2.xml /exist/etc
 
 

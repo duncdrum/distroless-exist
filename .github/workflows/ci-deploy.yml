@@ -84,6 +84,3 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/existdb:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     
-      # NOTE (DP): This is for debugging, publishes an experimental image from inside PRs against develop
-      # TODO(DP): adjust maven build for multi-arch, maybe limit platforms even more.
-      #  see https://blog.oddbit.com/post/2020-09-25-building-multi-architecture-im/

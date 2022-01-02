@@ -92,8 +92,9 @@ ENV JAVA_TOOL_OPTIONS \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
   # -XX:+UseG1GC \
   -XX:+UseStringDeduplication \
-  -XX:+UseContainerSupport \
-  -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0}  \
+  # -XX:+UseContainerSupport \
+  -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
+  -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:+ExitOnOutOfMemoryError
 
 HEALTHCHECK CMD [ "java", \

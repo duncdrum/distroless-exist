@@ -8,7 +8,7 @@
 
 # Tests that use rest endpoint, this might be disabled by default soon
 @test "confirm new password" {
-  result=$(curl -s -H 'Content-Type: text/xml' -u 'admin:nimda' --data-binary @exist-docker/src/test/bats/fixtures/dba-xq.xml http://127.0.0.1:8080/exist/rest/db)
+  result=$(curl -s -H 'Content-Type: text/xml' -u 'admin:nimda' --data-binary @test/bats/fixtures/dba-xq.xml http://127.0.0.1:8080/exist/rest/db)
   [ "$result" == 'true' ]
 }
 
@@ -19,7 +19,7 @@
 }
 
 @test "POST list repo query" {
-  result=$(curl -s -H 'Content-Type: text/xml' -u 'admin:nimda' --data-binary @exist-docker/src/test/bats/fixtures/repo-list.xml http://127.0.0.1:8080/exist/rest/db | grep -o 'http://' | head -1)
+  result=$(curl -s -H 'Content-Type: text/xml' -u 'admin:nimda' --data-binary @test/bats/fixtures/repo-list.xml http://127.0.0.1:8080/exist/rest/db | grep -o 'http://' | head -1)
   [ "$result" == 'http://' ]
 }
 

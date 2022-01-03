@@ -23,26 +23,10 @@
 # FROM openjdk:11-jdk-slim-bullseye as builder
 
 # WORKDIR /usr/local
-# RUN apt-get update && apt-get install -y --no-install-recommends maven libsaxon-java
+# RUN apt-get update && apt-get install -y --no-install-recommends maven libsaxonb-java
 
-# RUN mvn -T2C clean install -DskipTests -Ddependency-check.skip=true -Ddocker=true -P skip-build-dist-archives,\!build-dist-archives,\!mac-dmg-on-mac,\!codesign-mac-dmg,\!mac-dmg-on-unix,\!installer,\!concurrency-stress-tests,\!micro-benchmarks,\!appassembler-booter
-
-# FROM gcr.io/distroless/java11-debian11:latest
-
-# See https://blog.adoptium.net/2021/12/eclipse-temurin-linux-installers-available/
-
-# Copy over dependancies for Apache FOP, missing from gcr's JRE
-# TODO (DP): Arch specific paths e.g. /usr/lib/aarch64-linux-gnu
-# COPY --from=builder /usr/lib/aarch64-linux-gnu/libfreetype.so.6 /usr/lib/aarch64-linux-gnu/libfreetype.so.6
-# COPY --from=builder /usr/lib/aarch64-linux-gnu/liblcms2.so.2 /usr/lib/aarch64-linux-gnu/liblcms2.so.2
-# COPY --from=builder /usr/lib/aarch64-linux-gnu/libpng16.so.16 /usr/lib/aarch64-linux-gnu/libpng16.so.16
-# COPY --from=builder /usr/lib/aarch64-linux-gnu/libfontconfig.so.1 /usr/lib/aarch64-linux-gnu/libfontconfig.so.1
-
-# Copy dependancies for Apache Batik (used by Apache FOP to handle SVG rendering)
-# COPY --from=builder /etc/fonts /etc/fonts
-# COPY --from=builder /lib/aarch64-linux-gnu/libexpat.so.1 /lib/aarch64-linux-gnu/libexpat.so.1
-# COPY --from=builder /usr/share/fontconfig /usr/share/fontconfig
-# COPY --from=builder /usr/share/fonts/truetype/dejavu /usr/share/fonts/truetype/dejavu 
+# RUN mvn -T2C clean install -DskipTests -Ddependency-check.skip=true -Ddocker=false -P skip-build-dist-archives,\!build-dist-archives,\!mac-dmg-on-mac,\!codesign-mac-dmg,\!mac-dmg-on-unix,\!installer,\!concurrency-stress-tests,\!micro-benchmarks,\!appassembler-booter
+# RUN saxonb-xslt -s:dump/exist-distribution-5.3.1/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
 
 FROM gcr.io/distroless/java11-debian11:latest
 
@@ -52,7 +36,6 @@ COPY dump/exist-distribution-5.3.1/LICENSE /exist/LICENSE
 COPY dump/exist-distribution-5.3.1/autodeploy /exist/autodeploy
 COPY dump/exist-distribution-5.3.1/etc /exist/etc
 COPY dump/exist-distribution-5.3.1/lib /exist/lib
-# COPY dump/exist-distribution-5.3.1/logs /exist/logs
 COPY log4j2.xml /exist/etc
 
 
@@ -90,9 +73,7 @@ ENV JAVA_TOOL_OPTIONS \
   -Dexist.configurationFile=/exist/etc/conf.xml \
   -Djetty.home=/exist \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
-  # -XX:+UseG1GC \
   -XX:+UseStringDeduplication \
-  # -XX:+UseContainerSupport \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:+ExitOnOutOfMemoryError

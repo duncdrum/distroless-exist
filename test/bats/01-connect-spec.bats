@@ -22,6 +22,7 @@
 }
 
 @test "logs are error free" {
+  # see https://github.com/eXist-db/exist/issues/4126
   skip
   result=$(docker logs exist-ci | grep -ow -c 'ERROR' || true)
   [ "$result" -eq 0 ]

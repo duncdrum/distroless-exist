@@ -32,10 +32,10 @@ FROM gcr.io/distroless/java11-debian11:latest
 
 
 # Copy eXist-db
-COPY dump/exist-distribution-5.3.1/LICENSE /exist/LICENSE
-COPY dump/exist-distribution-5.3.1/autodeploy /exist/autodeploy
-COPY dump/exist-distribution-5.3.1/etc /exist/etc
-COPY dump/exist-distribution-5.3.1/lib /exist/lib
+COPY dump/exist-distribution-*/LICENSE /exist/LICENSE
+COPY dump/exist-distribution-*/autodeploy /exist/autodeploy
+COPY dump/exist-distribution-*/etc /exist/etc
+COPY dump/exist-distribution-*/lib /exist/lib
 COPY log4j2.xml /exist/etc
 
 

@@ -63,9 +63,11 @@ ARG MAX_BROKER
 ARG JVM_MAX_RAM_PERCENTAGE
 
 ENV EXIST_HOME "/exist"
-# ENV CLASSPATH=/exist/lib/${exist.uber.jar.filename}
 ENV CLASSPATH=/exist/lib/*
 
+
+# -XX:+AlwaysPreTouch
+# -XX:+ParallelRefProcEnabled
 
 ENV JAVA_TOOL_OPTIONS \
   -Dfile.encoding=UTF8 \

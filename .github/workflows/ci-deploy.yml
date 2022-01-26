@@ -3,6 +3,7 @@ on: [push, pull_request]
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:experimental
+  EXIST_VER: 6.0.0
 
 jobs:
   build:
@@ -53,7 +54,7 @@ jobs:
 
       # BUILD
       - name: Modify logging config
-        run: saxonb-xslt -s:dump/exist-distribution-6.0.0/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
+        run: saxonb-xslt -s:dump/exist-distribution-${{ env.EXIST_VER }}/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
 
       - name: Build and export to Docker
         uses: docker/build-push-action@v2
@@ -81,6 +82,9 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/existdb:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/existdb:latest
+            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}
+            ${{ secrets.DOCKER_USERNAME }}/existdb:release
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     

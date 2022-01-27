@@ -20,16 +20,25 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-# FROM openjdk:11-jdk-slim-bullseye as builder
+# FROM debian:bullseye-slim as builder
 
 # WORKDIR /usr/local
-# RUN apt-get update && apt-get install -y --no-install-recommends maven libsaxonb-java
+# RUN apt-get update && apt-get install -y --no-install-recommends wget apt-transport-https gnupg
+# RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
+# RUN apt-get install  -y --no-install-recommends temurin-8-jdk
 
-# RUN mvn -T2C clean install -DskipTests -Ddependency-check.skip=true -Ddocker=false -P skip-build-dist-archives,\!build-dist-archives,\!mac-dmg-on-mac,\!codesign-mac-dmg,\!mac-dmg-on-unix,\!installer,\!concurrency-stress-tests,\!micro-benchmarks,\!appassembler-booter
-# RUN saxonb-xslt -s:dump/exist-distribution-5.3.1/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
+# FROM eclipse-temurin:8 as builder
 
-FROM gcr.io/distroless/java11-debian11:latest
+# WORKDIR /usr/local
+# RUN apt-get update && apt-get install -y --no-install-recommends wget apt-transport-https gnupg
+# RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
+# RUN apt-get install  -y --no-install-recommends temurin-8-jdk
 
+FROM gcr.io/distroless/java-base:latest
+
+ENV JAVA_HOME=/opt/java/openjdk
+COPY --from=eclipse-temurin:8 $JAVA_HOME $JAVA_HOME
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Copy eXist-db
 COPY dump/exist-distribution-*/LICENSE /exist/LICENSE
@@ -73,6 +82,7 @@ ENV JAVA_TOOL_OPTIONS \
   -Dexist.configurationFile=/exist/etc/conf.xml \
   -Djetty.home=/exist \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
+  -XX:+UseG1GC \
   -XX:+UseStringDeduplication \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \

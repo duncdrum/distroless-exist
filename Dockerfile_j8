@@ -20,8 +20,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-FROM gcr.io/distroless/java11-debian11:latest
 
+FROM gcr.io/distroless/java-base:latest
+
+ENV JAVA_HOME=/opt/java/openjdk
+COPY --from=eclipse-temurin:8-jre $JAVA_HOME $JAVA_HOME
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Copy eXist-db
 COPY dump/exist-distribution-*/LICENSE /exist/LICENSE
@@ -53,6 +57,7 @@ ENV JAVA_TOOL_OPTIONS \
   -Dexist.configurationFile=/exist/etc/conf.xml \
   -Djetty.home=/exist \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
+  -XX:+UseG1GC \
   -XX:+UseStringDeduplication \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \

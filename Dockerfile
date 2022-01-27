@@ -20,24 +20,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-# FROM debian:bullseye-slim as builder
-
-# WORKDIR /usr/local
-# RUN apt-get update && apt-get install -y --no-install-recommends wget apt-transport-https gnupg
-# RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
-# RUN apt-get install  -y --no-install-recommends temurin-8-jdk
-
-# FROM eclipse-temurin:8 as builder
-
-# WORKDIR /usr/local
-# RUN apt-get update && apt-get install -y --no-install-recommends wget apt-transport-https gnupg
-# RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
-# RUN apt-get install  -y --no-install-recommends temurin-8-jdk
 
 FROM gcr.io/distroless/java-base:latest
 
 ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:8 $JAVA_HOME $JAVA_HOME
+COPY --from=eclipse-temurin:8-jre $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Copy eXist-db
@@ -48,17 +35,6 @@ COPY dump/exist-distribution-*/lib /exist/lib
 COPY log4j2.xml /exist/etc
 
 
-# Build-time metadata as defined at http://label-schema.org
-# and used by autobuilder @hooks/build
-# LABEL org.label-schema.build-date=${build-tstamp} \
-#       org.label-schema.description="${project.description}" \
-#       org.label-schema.name="existdb" \
-#       org.label-schema.schema-version="1.0" \
-#       org.label-schema.url="${project.url}" \
-#       org.label-schema.vcs-ref=${build-commit-abbrev} \
-#       org.label-schema.vcs-url="${project.scm.url}" \
-#       org.label-schema.vendor="existdb"
-
 EXPOSE 8080 8443
 
 # make CACHE_MEM and MAX_BROKER available to users
@@ -67,7 +43,6 @@ ARG MAX_BROKER
 ARG JVM_MAX_RAM_PERCENTAGE
 
 ENV EXIST_HOME "/exist"
-# ENV CLASSPATH=/exist/lib/${exist.uber.jar.filename}
 ENV CLASSPATH=/exist/lib/*
 
 

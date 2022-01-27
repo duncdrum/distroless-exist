@@ -5,9 +5,9 @@ Minimal Docker Image of eXist-db NoSQL Database Client/Server with FO support
 [![Build Status](https://travis-ci.com/eXist-db/exist.png?branch=develop)](https://travis-ci.com/eXist-db/exist)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c5d7a02842dd4a3c85b1b2ad421b0d13)](https://www.codacy.com/app/eXist-db/exist?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eXist-db/exist&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/license-AGPL%203.1-orange.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
-[![](https://images.microbadger.com/badges/image/existdb/existdb.svg)](https://microbadger.com/images/existdb/existdb "Get your own image badge on microbadger.com")
-[![](https://images.microbadger.com/badges/version/existdb/existdb.svg)](https://microbadger.com/images/existdb/existdb "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/existdb/existdb.svg)](https://microbadger.com/images/existdb/existdb "Get your own commit badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/duncdrum/existdb.svg)](https://microbadger.com/images/duncdrum/existdb "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/version/duncdrum/existdb.svg)](https://microbadger.com/images/duncdrum/existdb "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/duncdrum/existdb.svg)](https://microbadger.com/images/duncdrum/existdb "Get your own commit badge on microbadger.com")
 
 This module holds the source files for building a minimal docker image of the [exist-db](https://www.exist-db.org) xml 
 database, images are automatically updated as part of the build-test life-cycle. 
@@ -27,7 +27,7 @@ The images are based on Google Cloud Platform's ["Distroless" Docker Images](htt
 
 ## How to use
 
-Pre-build images are available on [DockerHub](https://hub.docker.com/r/existdb/existdb/). 
+Pre-build images are available on [DockerHub](https://hub.docker.com/r/duncdrum/existdb/). 
 There are two continuously updated channels:
 *   `release` for the stable releases based on the [`master` branch](https://github.com/eXist-db/exist/tree/master)
 *   `latest` for the latest commit to the [`develop` branch](https://github.com/eXist-db/exist/tree/develop).
@@ -37,13 +37,13 @@ Multi-arch Images are currently produced for `linux/amd64` and `linux/arm64`.
 To download tanhe image run:
 
 ```bash
-docker pull existdb/existdb:latest
+docker pull duncdrum/existdb:latest
 ```
 
 Once the download is complete, you can run the image
 
 ```bash
-docker run -dit -p 8080:8080 -p 8443:8443 --name exist existdb/existdb:latest
+docker run -dit -p 8080:8080 -p 8443:8443 --name exist duncdrum/existdb:latest
 ```
 
 ### What does this do?
@@ -53,7 +53,7 @@ docker run -dit -p 8080:8080 -p 8443:8443 --name exist existdb/existdb:latest
 *   `-p` maps the Containers internal and external port assignments (we recommend sticking with matching pairs). This allows you to connect to the eXist-db Web Server running in the Docker container.
 *   `--name` lets you provide a name (instead of using a randomly generated one)
 
-The only required parts are `docker run existdb/existdb`. 
+The only required parts are `docker run duncdrum/existdb`. 
 For a full list of available options see the official [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/)
 
 After running the `pull` and `run` commands, you can access eXist-db via [localhost:8080](localhost:8080) in your browser.
@@ -107,7 +107,7 @@ We'll take a quick look at three scenarios of increasing complexity, to demonstr
 The simplest and straightforward case assumes that you have a `.xar` app inside a `build` folder on the same level as the `Dockerfile`. 
 To get an image of an eXist-db instance with your app installed and running, simply adopt the `docker cp ...` command to the appropriate `Dockerfile` syntax.
 ```docker
-FROM existdb/existdb:5.0.0
+FROM duncdrum/existdb:5.0.0
 
 COPY build/*.xar /exist/autodeploy
 ```
@@ -116,7 +116,7 @@ You should see something like this:
 
 ```bash
 Sending build context to Docker daemon  4.337MB
-Step 1/2 : FROM existdb/existdb:5.0.0
+Step 1/2 : FROM duncdrum/existdb:5.0.0
  ---> 3f4dbbce9afa
 Step 2/2 : COPY build/*.xar /exist/autodeploy
  ---> ace38b0809de
@@ -133,7 +133,7 @@ Instead of a local build directory, we'll download the `.xar` from the web, and 
 To execute any of the `docker exec …` style commands from this readme, we need to use `RUN`.
 
 ```docker
-FROM existdb/existdb
+FROM duncdrum/existdb
 
 # NOTE: this is for syntax demo purposes only
 RUN [ "java", "org.exist.start.Main", "client", "--no-gui",  "-l", "-u", "admin", "-P", "", "-x", "sm:passwd('admin','123')" ]
@@ -195,7 +195,7 @@ RUN apk add --no-cache --virtual .build-deps \
 
 
 # START STAGE 2
-FROM existdb/existdb:release
+FROM duncdrum/existdb:release
 
 COPY --from=builder /home/my-app/build/*.xar /exist/autodeploy
 

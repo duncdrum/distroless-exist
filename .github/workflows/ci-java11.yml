@@ -1,4 +1,4 @@
-name: Deploy
+name: Java 11
 on: [push, pull_request]
 
 env:

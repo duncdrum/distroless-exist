@@ -2,15 +2,15 @@ name: Deploy
 on: [push, pull_request]
 
 env:
-  TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:experimental
+  TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
   EXIST_VER: 6.0.0
 
 jobs:
   build:
     name: Build and Test Images
     runs-on: ubuntu-latest
-    # NOTE (DP): Publish on develop and main, test on PRs against these
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || github.base_ref ==  'develop' || github.base_ref ==  'main'
+    # NOTE (DP): Test on PRs and pushes
+    if: github.ref == 'refs/heads/main' || github.base_ref ==  'main'
     steps:
     
     # SETUP
@@ -45,10 +45,6 @@ jobs:
       - name: Install bats and Saxon
         run: sudo apt-get install bats libsaxonb-java
 
-      # ENV Checks
-      # - name: Test multi-arch env
-      #   run: ./check-qemu-env.sh
-
       - name: Check local images
         run: docker image ls
 
@@ -60,6 +56,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}
 
@@ -73,7 +70,7 @@ jobs:
         run: bats --tap test/bats/*.bats
 
       # PUSH
-      - name: Build and push
+      - name: Build and publish to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:

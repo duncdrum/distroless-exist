@@ -38,9 +38,16 @@ target/
 # OS specific files
 .DS_Store
 
+# Thumbnails
+._*
+
 # Jenv
 .java-version
 
 dump/base/
 dump/java/
 dump/logs/
+
+
+~$*.xlsx
+.~lock*

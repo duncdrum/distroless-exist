@@ -2,7 +2,7 @@ name: Deploy
 on: [push, pull_request]
 
 env:
-  TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:experimental
+  TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
   EXIST_VER: 6.0.0
 
 jobs:
@@ -18,11 +18,11 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up JDK 11
+      - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
           distribution: temurin
-          java-version: '11'
+          java-version: '8'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -74,7 +74,7 @@ jobs:
 
       # PUSH
       - name: Build and push
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/java8'
         uses: docker/build-push-action@v2
         with:
           context: ./
@@ -83,8 +83,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:latest
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release
+            ${{ secrets.DOCKER_USERNAME }}/existdb:latest-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:release-j8
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     

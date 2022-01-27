@@ -9,8 +9,8 @@ jobs:
   build:
     name: Build and Test Images
     runs-on: ubuntu-latest
-    # NOTE (DP): Publish on develop and main, test on PRs against these
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || github.base_ref ==  'develop' || github.base_ref ==  'main'
+    # NOTE (DP): Test on PRs and pushes
+    if: github.ref == 'refs/heads/main' || github.base_ref ==  'main'
     steps:
     
     # SETUP
@@ -45,10 +45,6 @@ jobs:
       - name: Install bats and Saxon
         run: sudo apt-get install bats libsaxonb-java
 
-      # ENV Checks
-      # - name: Test multi-arch env
-      #   run: ./check-qemu-env.sh
-
       - name: Check local images
         run: docker image ls
 
@@ -73,8 +69,9 @@ jobs:
         run: bats --tap test/bats/*.bats
 
       # PUSH
-      - name: Build and push
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/java8'
+      - name: Build and publish to Dockerhub
+      # only publish from main
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
           context: ./

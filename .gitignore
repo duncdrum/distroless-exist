@@ -41,7 +41,6 @@ target/
 # Jenv
 .java-version
 
-dump/base/
-dump/java/
-dump/logs/
-dump/java-base/
+!dump/exist-distribution-*/
+dump/*
+

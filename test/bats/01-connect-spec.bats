@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 # Basic start-up and connection tests
+# These tests expect a running container at port 8080 with the name "exist-ci"
+
 @test "container jvm responds from client" {
   run docker exec exist-ci java -version
   [ "$status" -eq 0 ]

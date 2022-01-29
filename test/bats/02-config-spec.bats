@@ -1,6 +1,9 @@
 #!/usr/bin/env bats
 
 # Tests for modifying eXist's configuration files
+# These tests expect a running container at port 8080 with the name "exist-ci"
+# The test will create a temporary container "ex-mod" running on port 9090
+
 @test "copy configuration file from container to disk" {
   run docker cp exist-ci:exist/etc/conf.xml ./conf.xml && [[ -e ./conf.xml ]] && ls -l ./conf.xml
   [ "$status" -eq 0 ]

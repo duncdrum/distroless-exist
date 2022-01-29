@@ -1,4 +1,10 @@
+# folders
+.github/
+reports/
+test/
+dump/
+!dump/exist-distribution-*/
+
+# files
 check-qemu-env.sh
 log4j2-docker.xslt
-test/
-.github/

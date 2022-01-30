@@ -15,7 +15,7 @@
 }
 
 @test "create modified image" {
-  run docker create --name ex-mod -p 9090:8080 duncdrum/existdb
+  run docker create --name ex-mod -p 9090:8080 -v "$(pwd)"/exist/autodeploy:/exist/autodeploy duncdrum/existdb
   [ "$status" -eq 0 ]
   run docker cp ./conf.xml ex-mod:exist/etc/conf.xml
   [ "$status" -eq 0 ]
@@ -27,7 +27,7 @@
   # Make sure container is running
   result=$(docker ps | grep -o 'ex-mod')
   [ "$result" == 'ex-mod' ]
-  sleep 30
+  sleep 10
   result=$(docker logs ex-mod | grep -o "60,000 ms during shutdown")
   [ "$result" == '60,000 ms during shutdown' ]
 }

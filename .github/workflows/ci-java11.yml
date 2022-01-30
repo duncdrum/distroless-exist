@@ -71,6 +71,11 @@ jobs:
           docker logs exist-ci | grep -w "Approximate maximum amount of memory for JVM:"
           docker logs exist-ci | grep -w "Number of processors available to JVM:"
 
+      # - name: Create empty autodeploy volume
+      #   run: |
+      #     docker volume create autodeploy
+      #     docker volume ls    
+
       - name: Run tests
         run: bats --tap test/bats/*.bats
 

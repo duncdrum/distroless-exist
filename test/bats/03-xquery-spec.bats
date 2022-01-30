@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 # Tests that execute xquery via Java entrypoint
+# These tests expect a running container at port 8080 with the name "exist-ci"
+
 @test "Change admin password" {
   run docker exec exist-ci java org.exist.start.Main client -q -u admin -P '' -x 'sm:passwd("admin", "nimda")'
   [ "$status" -eq 0 ]

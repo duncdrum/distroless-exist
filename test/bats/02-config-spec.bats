@@ -1,6 +1,9 @@
 #!/usr/bin/env bats
 
 # Tests for modifying eXist's configuration files
+# These tests expect a running container at port 8080 with the name "exist-ci"
+# The test will create a temporary container "ex-mod" running on port 9090
+
 @test "copy configuration file from container to disk" {
   run docker cp exist-ci:exist/etc/conf.xml ./conf.xml && [[ -e ./conf.xml ]] && ls -l ./conf.xml
   [ "$status" -eq 0 ]
@@ -12,9 +15,9 @@
 }
 
 @test "create modified image" {
-  run docker create --name ex-mod -p 9090:8080 existdb/exist-ci-build:latest
+  run docker create --name ex-mod -p 9090:8080 -v "$(pwd)"/exist/autodeploy:/exist/autodeploy duncdrum/existdb
   [ "$status" -eq 0 ]
-  run docker cp ./conf.xml ex-mod:exist/config/conf.xml
+  run docker cp ./conf.xml ex-mod:exist/etc/conf.xml
   [ "$status" -eq 0 ]
   run docker start ex-mod
   [ "$status" -eq 0 ]
@@ -24,7 +27,7 @@
   # Make sure container is running
   result=$(docker ps | grep -o 'ex-mod')
   [ "$result" == 'ex-mod' ]
-  sleep 30
+  sleep 10
   result=$(docker logs ex-mod | grep -o "60,000 ms during shutdown")
   [ "$result" == '60,000 ms during shutdown' ]
 }

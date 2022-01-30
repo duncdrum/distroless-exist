@@ -44,3 +44,7 @@ target/
 !dump/exist-distribution-*/
 dump/*
 
+# Copied files from test runs
+/conf.xml
+/conf.xml.bak
+

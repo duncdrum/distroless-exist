@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 # Basic start-up and connection tests
+# These tests expect a running container at port 8080 with the name "exist-ci"
+
 @test "container jvm responds from client" {
   run docker exec exist-ci java -version
   [ "$status" -eq 0 ]
@@ -26,7 +28,14 @@
   [ "$result" -eq 0 ]
 }
 
+# Only appears on boot with non empty autodeploy directory
 @test "logs contain repo.log output" {
   result=$(docker logs exist-ci | grep -o -m 1 'Deployment.java')
   [ "$result" == 'Deployment.java' ]
+}
+
+# Check for cgroup config warning 
+@test "check logs for cgroup file warning" {
+    result=$(docker logs exist-ci | grep -ow -c 'Unable to open cgroup memory limit file' || true )
+  [ "$result" -eq 0 ]
 }

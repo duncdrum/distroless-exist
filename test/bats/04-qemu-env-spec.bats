@@ -4,7 +4,7 @@ get_qemu_check_msg() {
 
 
 # test system viability for building muli-arch images
-@test "Check welcome message" {
+@test "Check QEMU report status" {
     run get_qemu_check_msg
      [ "$status" -eq 0 ]
 }

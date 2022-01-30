@@ -28,7 +28,14 @@
   [ "$result" -eq 0 ]
 }
 
+# Only appears on boot with non empty autodeploy directory
 @test "logs contain repo.log output" {
   result=$(docker logs exist-ci | grep -o -m 1 'Deployment.java')
   [ "$result" == 'Deployment.java' ]
+}
+
+# Check for cgroup config warning 
+@test "check logs for cgroup file warning" {
+    result=$(docker logs exist-ci | grep -ow -c 'Unable to open cgroup memory limit file' || true )
+  [ "$result" -eq 0 ]
 }

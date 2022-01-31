@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-FROM gcr.io/distroless/java11-debian11:latest
-
+ARG DISTRO_TAG=latest
+FROM gcr.io/distroless/java11-debian11:${DISTRO_TAG}
 
 # Copy eXist-db
 COPY dump/exist-distribution-*/LICENSE /exist/LICENSE

@@ -14,6 +14,8 @@
   [ "$status" -eq 0 ]
 }
 
+# TODO(DP): this now works on CI and local, but it could be improved by using the pre-build images duncdrum/existdb:exist-ci when on CI
+# keeping the current code for running on local. This would speed up CI runs quite a bit and avoid pesky volume limitations no different OS
 @test "create modified image" {
   run docker create --name ex-mod -p 9090:8080 -v "$(pwd)"/exist/autodeploy:/exist/autodeploy duncdrum/existdb
   [ "$status" -eq 0 ]

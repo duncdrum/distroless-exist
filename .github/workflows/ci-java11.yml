@@ -48,17 +48,35 @@ jobs:
       - name: Check local images
         run: docker image ls
 
-      # BUILD
       - name: Modify logging config
         run: saxonb-xslt -s:dump/exist-distribution-${{ env.EXIST_VER }}/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
 
-      - name: Build and export to Docker
+      # BUILD
+      - name: Build default images for testing on CI
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}
+
+      - name: Build debug images for testing on CI
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          build-args: DISTRO_TAG=debug
+          file: ./Dockerfile
+          load: true
+          tags: ${{ env.TEST_TAG }}-debug
+
+      # - name: Build nonroot images for testing on CI
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     build-args: DISTRO_TAG=nonroot
+      #     file: ./Dockerfile
+      #     load: true
+      #     tags: ${{ env.TEST_TAG }}-nonroot   
 
       # TEST
       - name: Start exist-ci container
@@ -80,7 +98,7 @@ jobs:
         run: bats --tap test/bats/*.bats
 
       # PUSH
-      - name: Build and publish to Dockerhub
+      - name: Build and publish :latest to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
@@ -93,5 +111,22 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/existdb:latest
             ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}
             ${{ secrets.DOCKER_USERNAME }}/existdb:release
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
+
+      - name: Build and publish :debug to Dockerhub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile
+          build-args: DISTRO_TAG=debug
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/existdb:debug
+            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug
+            ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     

@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
-  EXIST_VER: 6.0.0
+  EXIST_VER: 6.0.1
 
 jobs:
   build:

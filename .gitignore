@@ -41,8 +41,8 @@ target/
 # Jenv
 .java-version
 
-!dump/exist-distribution-*/
 dump/*
+!dump/exist-distribution-*/
 
 # Copied files from test runs
 /conf.xml

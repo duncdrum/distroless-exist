@@ -107,7 +107,7 @@ We'll take a quick look at three scenarios of increasing complexity, to demonstr
 The simplest and straightforward case assumes that you have a `.xar` app inside a `build` folder on the same level as the `Dockerfile`. 
 To get an image of an eXist-db instance with your app installed and running, simply adopt the `docker cp ...` command to the appropriate `Dockerfile` syntax.
 ```docker
-FROM duncdrum/existdb:5.0.0
+FROM duncdrum/existdb:6.0.1
 
 COPY build/*.xar /exist/autodeploy
 ```
@@ -116,7 +116,7 @@ You should see something like this:
 
 ```bash
 Sending build context to Docker daemon  4.337MB
-Step 1/2 : FROM duncdrum/existdb:5.0.0
+Step 1/2 : FROM duncdrum/existdb:6.0.1
  ---> 3f4dbbce9afa
 Step 2/2 : COPY build/*.xar /exist/autodeploy
  ---> ace38b0809de

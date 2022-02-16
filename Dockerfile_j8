@@ -20,19 +20,21 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+ARG DISTRO_TAG=latest
+FROM gcr.io/distroless/java-base-debian11:${DISTRO_TAG}
 
-FROM gcr.io/distroless/java-base-debian11:latest
+ARG USR=root
 
 ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:8-jre $JAVA_HOME $JAVA_HOME
+COPY --from=eclipse-temurin:8-jre --chown=${USR} $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Copy eXist-db
-COPY dump/exist-distribution-*/LICENSE /exist/LICENSE
-COPY dump/exist-distribution-*/autodeploy /exist/autodeploy
-COPY dump/exist-distribution-*/etc /exist/etc
-COPY dump/exist-distribution-*/lib /exist/lib
-COPY log4j2.xml /exist/etc
+COPY --chown=${USR} dump/exist-distribution-*/LICENSE /exist/LICENSE
+COPY --chown=${USR} dump/exist-distribution-*/autodeploy /exist/autodeploy
+COPY --chown=${USR} dump/exist-distribution-*/etc /exist/etc
+COPY --chown=${USR} dump/exist-distribution-*/lib /exist/lib
+COPY --chown=${USR} log4j2.xml /exist/etc
 
 
 EXPOSE 8080 8443
@@ -62,6 +64,8 @@ ENV JAVA_TOOL_OPTIONS \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:+ExitOnOutOfMemoryError
+
+USER ${USR}  
 
 HEALTHCHECK CMD [ "java", \
     "org.exist.start.Main", "client", \

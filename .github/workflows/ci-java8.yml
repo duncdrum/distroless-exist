@@ -65,9 +65,20 @@ jobs:
         with:
           context: .
           build-args: DISTRO_TAG=debug
-          file: ./Dockerfile
+          file: ./Dockerfile_j8
           load: true
-          tags: ${{ env.TEST_TAG }}-debug    
+          tags: ${{ env.TEST_TAG }}-debug
+
+      - name: Build nonroot images for testing on CI
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          build-args: |
+            DISTRO_TAG=nonroot
+            USR=nonroot:nonroot
+          file: ./Dockerfile_j8
+          load: true
+          tags: ${{ env.TEST_TAG }}-nonroot        
 
       # TEST
       - name: Start exist-ci container
@@ -112,4 +123,24 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug-j8
             ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug-j8
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max   
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
+
+      - name: Build and publish :nonroot to Dockerhub
+      # only publish from main
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile_j8
+          build-args: |
+            DISTRO_TAG=nonroot
+            USR=nonroot:nonroot
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/existdb:nonroot-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-nonroot-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:release-nonroot-j8
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max       

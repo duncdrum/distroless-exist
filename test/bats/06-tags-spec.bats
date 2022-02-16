@@ -1,9 +1,9 @@
 #!/usr/bin/env bats
 
 # These tests expect prebuild images with the tags:
-# - duncdrum/existdb:exist-ci-debug 
-# - duncdrum/existdb:exist-ci, and 
 # - duncdrum/existdb:exist-ci
+# - duncdrum/existdb:exist-ci-debug , and 
+# - duncdrum/existdb:exist-ci-nonroot
 
 #  Unskip for local testing
 @test "create debug container" {
@@ -25,7 +25,6 @@
     run docker run --entrypoint whoami --name noshell --rm duncdrum/existdb:exist-ci
     [ "$status" -ne 0 ]
     [ "$output" != "root" ]
-    # [ "$output" == 'docker: Error response from daemon: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "whoami": executable file not found in $PATH: unknown.' ]
 }
 
 @test "should use user on non-root container" {

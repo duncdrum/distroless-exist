@@ -84,7 +84,7 @@ jobs:
       - name: Start exist-ci containers
         run: |
           docker run -dit -p 8080:8080 --name exist-ci --rm ${{ env.TEST_TAG }}
-          docker run -dit -p 8181:8080 --name nonroot --rm ${{ env.TEST_TAG }}-nonroot
+          docker run -dit -p 8181:8080 -v $pwd/exist/autodeploy:/exist/autodeploy --name nonroot --rm ${{ env.TEST_TAG }}-nonroot
           sleep 35s
 
       - name: Check mem and cgroup config    

@@ -28,9 +28,6 @@
 }
 
 @test "should not use root on nonroot containers" {
-    # run docker run -it --name nonroot --rm duncdrum/existdb:exist-ci-nonroot 
-    # [ "$status" -ne 0 ]
-    # sleep 10
     result=$(docker logs nonroot | grep -o "Running as user 'nonroot'")
     [ "$result" == "Running as user 'nonroot'" ] 
 }

@@ -81,9 +81,10 @@ jobs:
           tags: ${{ env.TEST_TAG }}-nonroot   
 
       # TEST
-      - name: Start exist-ci container
+      - name: Start exist-ci containers
         run: |
           docker run -dit -p 8080:8080 --name exist-ci --rm ${{ env.TEST_TAG }}
+          docker run -dit -p 8181:8080 --name nonroot --rm ${{ env.TEST_TAG }}-nonroot
           sleep 35s
 
       - name: Check mem and cgroup config    

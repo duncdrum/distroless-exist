@@ -69,30 +69,32 @@ jobs:
           load: true
           tags: ${{ env.TEST_TAG }}-debug
 
-      # - name: Build nonroot images for testing on CI
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: .
-      #     build-args: DISTRO_TAG=nonroot
-      #     file: ./Dockerfile
-      #     load: true
-      #     tags: ${{ env.TEST_TAG }}-nonroot   
+      - name: Build nonroot images for testing on CI
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          build-args: |
+            DISTRO_TAG=nonroot
+            USR=nonroot:nonroot
+          file: ./Dockerfile
+          load: true
+          tags: ${{ env.TEST_TAG }}-nonroot   
 
       # TEST
-      - name: Start exist-ci container
+      - name: Start exist-ci containers
         run: |
           docker run -dit -p 8080:8080 --name exist-ci --rm ${{ env.TEST_TAG }}
+          docker run -dit -p 8181:8080 -v $pwd/exist/autodeploy:/exist/autodeploy --name nonroot --rm ${{ env.TEST_TAG }}-nonroot
           sleep 35s
+
+      # - name: Wait for exist-ci to boot    
+      #   run: |
+      #     timeout 60 sh -c 'until docker logs exist-ci | grep -qe "Server has started"; do sleep 3; done' localhost 8080        
 
       - name: Check mem and cgroup config    
         run: |
           docker logs exist-ci | grep -w "Approximate maximum amount of memory for JVM:"
           docker logs exist-ci | grep -w "Number of processors available to JVM:"
-
-      # - name: Create empty autodeploy volume
-      #   run: |
-      #     docker volume create autodeploy
-      #     docker volume ls    
 
       - name: Run tests
         run: bats --tap test/bats/*.bats
@@ -128,5 +130,24 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/existdb:debug
             ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug
             ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
+
+      - name: Build and publish :nonroot to Dockerhub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile
+          build-args: |
+            DISTRO_TAG=nonroot
+            USR=nonroot:nonroot
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/existdb:nonroot
+            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-nonroot
+            ${{ secrets.DOCKER_USERNAME }}/existdb:release-nonroot
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     

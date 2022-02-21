@@ -23,12 +23,14 @@
 ARG DISTRO_TAG=latest
 FROM gcr.io/distroless/java11-debian11:${DISTRO_TAG}
 
+ARG USR=root
+
 # Copy eXist-db
-COPY dump/exist-distribution-*/LICENSE /exist/LICENSE
-COPY dump/exist-distribution-*/autodeploy /exist/autodeploy
-COPY dump/exist-distribution-*/etc /exist/etc
-COPY dump/exist-distribution-*/lib /exist/lib
-COPY log4j2.xml /exist/etc
+COPY --chown=${USR} dump/exist-distribution-*/LICENSE /exist/LICENSE
+COPY --chown=${USR} dump/exist-distribution-*/autodeploy /exist/autodeploy
+COPY --chown=${USR} dump/exist-distribution-*/etc /exist/etc
+COPY --chown=${USR} dump/exist-distribution-*/lib /exist/lib
+COPY --chown=${USR} log4j2.xml /exist/etc
 
 
 EXPOSE 8080 8443
@@ -57,6 +59,8 @@ ENV JAVA_TOOL_OPTIONS \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:+ExitOnOutOfMemoryError
+
+USER ${USR}
 
 HEALTHCHECK CMD [ "java", \
     "org.exist.start.Main", "client", \

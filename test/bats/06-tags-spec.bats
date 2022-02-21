@@ -1,16 +1,16 @@
 #!/usr/bin/env bats
 
 # These tests expect prebuild images with the tags:
-# - duncdrum/existdb:exist-ci-debug 
-# - duncdrum/existdb:exist-ci, and 
-# - duncdrum/existdb:exist-ci
+# - duncdrum/existdb:exist-ci running as exist-ci
+# - duncdrum/existdb:exist-ci-debug , and 
+# - duncdrum/existdb:exist-ci-nonroot running as nonroot
 
 #  Unskip for local testing
 @test "create debug container" {
     skip
     run docker build --build-arg DISTRO_TAG=debug --tag duncdrum/exist-ci:debug .
     [ "$status" -eq 0 ]
-    run docker build --build-arg DISTRO_TAG=nonroot --tag duncdrum/exist-ci:nonroot .
+    run docker build --build-arg DISTRO_TAG=nonroot --build-arg USR=nonroot:nonroot --tag duncdrum/exist-ci:nonroot .
     [ "$status" -eq 0 ]
 
 }
@@ -25,15 +25,14 @@
     run docker run --entrypoint whoami --name noshell --rm duncdrum/existdb:exist-ci
     [ "$status" -ne 0 ]
     [ "$output" != "root" ]
-    # [ "$output" == 'docker: Error response from daemon: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "whoami": executable file not found in $PATH: unknown.' ]
 }
 
-@test "should use user on non-root container" {
-    skip
-    run docker run -it --entrypoint sh --name busybox --rm duncdrum/existdb:exist-ci-nonroot 
+@test "should not use root on nonroot containers" {
+    result=$(docker logs nonroot | grep -o "Running as user 'nonroot'")
+    [ "$result" == "Running as user 'nonroot'" ] 
 }
 
 @test "should use root on latest container" {
-    skip
-    run docker run -it --entrypoint sh --name busybox --rm duncdrum/existdb:exist-ci
+    result=$(docker logs exist-ci | grep -o "Running as user 'root'")
+    [ "$result" == "Running as user 'root'" ] 
 }

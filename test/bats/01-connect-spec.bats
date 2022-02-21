@@ -14,8 +14,10 @@
 }
 
 @test "container reports healthy to docker" {
-  result=$(docker ps | grep -o 'healthy')
-  [ "$result" == 'healthy' ]
+  result=$(docker ps | grep -c 'healthy')
+  [ "$result" -eq 2 ]
+  #   result=$(docker ps | grep -o 'healthy')
+  # [ "$result" == 'healthy' ]
 }
 
 @test "logs show clean start" {

@@ -87,15 +87,14 @@ jobs:
           docker run -dit -p 8181:8080 -v $pwd/exist/autodeploy:/exist/autodeploy --name nonroot --rm ${{ env.TEST_TAG }}-nonroot
           sleep 35s
 
+      # - name: Wait for exist-ci to boot    
+      #   run: |
+      #     timeout 60 sh -c 'until docker logs exist-ci | grep -qe "Server has started"; do sleep 3; done' localhost 8080        
+
       - name: Check mem and cgroup config    
         run: |
           docker logs exist-ci | grep -w "Approximate maximum amount of memory for JVM:"
           docker logs exist-ci | grep -w "Number of processors available to JVM:"
-
-      # - name: Create empty autodeploy volume
-      #   run: |
-      #     docker volume create autodeploy
-      #     docker volume ls    
 
       - name: Run tests
         run: bats --tap test/bats/*.bats

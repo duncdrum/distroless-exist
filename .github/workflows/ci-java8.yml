@@ -53,7 +53,7 @@ jobs:
 
       # BUILD
       - name: Build local images for testing on CI
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile_j8
@@ -61,7 +61,7 @@ jobs:
           tags: ${{ env.TEST_TAG }}
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           build-args: DISTRO_TAG=debug
@@ -70,7 +70,7 @@ jobs:
           tags: ${{ env.TEST_TAG }}-debug
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           build-args: |
@@ -94,7 +94,7 @@ jobs:
       - name: Build and publish :latest to Dockerhub
       # only publish from main
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -111,7 +111,7 @@ jobs:
       - name: Build and publish :debug to Dockerhub
       # only publish from main
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -129,7 +129,7 @@ jobs:
       - name: Build and publish :nonroot to Dockerhub
       # only publish from main
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

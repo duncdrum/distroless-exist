@@ -67,11 +67,10 @@ ENV JAVA_TOOL_OPTIONS \
 
 USER ${USR}  
 
-HEALTHCHECK CMD [ "java", \
-    "org.exist.start.Main", "client", \
+HEALTHCHECK CMD [ "java", "org.exist.start.Main", "client", \
     "--no-gui",  \
-    "--user", "guest", "--password", "guest", \
+    "--user", "guest", \
+    "--password", "guest", \
     "--xpath", "system:get-version()" ]
 
-ENTRYPOINT [ "java", \
-    "org.exist.start.Main", "jetty" ]
+ENTRYPOINT [ "java", "org.exist.start.Main", "jetty" ]

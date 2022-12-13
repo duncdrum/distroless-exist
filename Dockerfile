@@ -56,8 +56,8 @@ ENV JAVA_TOOL_OPTIONS \
   -Djetty.home=/exist \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
   -XX:+UseStringDeduplication \
+  -XX:+UseContainerSupport \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
-  -XX:MinRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
   -XX:+ExitOnOutOfMemoryError
 
 USER ${USR}
@@ -68,4 +68,6 @@ HEALTHCHECK CMD [ "java", "org.exist.start.Main", "client", \
     "--password", "guest", \
     "--xpath", "system:get-version()" ]
 
-ENTRYPOINT [ "java", "org.exist.start.Main", "jetty" ]
+ENTRYPOINT [ "java", "org.exist.start.Main"]
+
+CMD ["jetty"]

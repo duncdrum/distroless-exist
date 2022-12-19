@@ -21,15 +21,30 @@
 #
 
 ARG DISTRO_TAG=latest
+
+FROM maven:3-eclipse-temurin-11 as builder
+ARG BRANCH=develop
+
+# TODO (DP) add cache mount ?
+RUN git clone --single-branch --branch=${BRANCH} --depth=1 https://github.com/eXist-db/exist.git
+
+WORKDIR /exist
+
+# Yay for buildkit
+RUN --mount=type=cache,id=maven,target=/root/.m2 \
+mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Denv.CI=true -P '!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks' package
+
+
+
 FROM gcr.io/distroless/java11-debian11:${DISTRO_TAG}
 
 ARG USR=root
 
 # Copy eXist-db
-COPY --chown=${USR} dump/exist-distribution-*/LICENSE /exist/LICENSE
-COPY --chown=${USR} dump/exist-distribution-*/autodeploy /exist/autodeploy
-COPY --chown=${USR} dump/exist-distribution-*/etc /exist/etc
-COPY --chown=${USR} dump/exist-distribution-*/lib /exist/lib
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-*-dir/LICENSE /exist/LICENSE
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-*-dir/autodeploy /exist/autodeploy
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-*-dir/etc /exist/etc
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-*-dir/lib /exist/lib
 COPY --chown=${USR} log4j2.xml /exist/etc
 
 

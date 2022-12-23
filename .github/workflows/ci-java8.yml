@@ -1,5 +1,9 @@
 name: Java 8
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  schedule: 
+      - cron: "11 */8 * * *"
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci

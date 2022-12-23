@@ -66,6 +66,9 @@ docker stop exist
 
 or if you omitted the `-d` flag earlier press `CTRL-C` inside the terminal showing the exist logs.
 
+<!-- TODO(DP) see #7  -->
+<!-- `docker build --build-arg BRANCH=master -t duncdrum/existdb:release . ` -->
+
 ### Interacting with the running container
 
 You can interact with a running container as if it were a regular Linux host (without a shell in our case). 

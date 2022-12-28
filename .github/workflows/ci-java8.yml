@@ -46,15 +46,6 @@ jobs:
         with:
           install: true
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          # Key is named differently to avoid collision
-          key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-multi-buildx      
-
       - name: Install bats
         # run: sudo apt-get install bats libsaxonb-java
         run: sudo apt-get install bats
@@ -117,8 +108,6 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
@@ -127,15 +116,13 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/existdb:latest-j8
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max  
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max  
 
       - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
@@ -146,15 +133,13 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/existdb:debug-j8
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: push :nonroot (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
@@ -166,16 +151,14 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/existdb:nonroot-j8
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       # Release
       - name: Push :release to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
@@ -185,15 +168,13 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-j8
             ${{ secrets.DOCKER_USERNAME }}/existdb:release-j8
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Push :debug (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
@@ -205,15 +186,13 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug-j8
             ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug-j8
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
 
       - name: Push :nonroot (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
@@ -226,10 +205,5 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-nonroot-j8
             ${{ secrets.DOCKER_USERNAME }}/existdb:release-nonroot-j8
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache                  
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max                  

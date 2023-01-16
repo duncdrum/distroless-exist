@@ -32,7 +32,7 @@ WORKDIR /exist
 
 # Yay for buildkit
 RUN --mount=type=cache,id=maven,target=/root/.m2 \
-mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Denv.CI=true -P '!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks' package
+mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Dizpack-signing=false -Denv.CI=true -P '!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks' package
 
 
 

@@ -7,7 +7,7 @@ on:
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
-  # EXIST_VER: 6.0.1
+  EXIST_VER: 6.1.0
 
 jobs:
   build:
@@ -105,11 +105,13 @@ jobs:
       - name: Run tests
         run: bats --tap test/bats/*.bats
 
-      - name: Get SemVer string from test image
-        run: |
-          echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
-      - name: Test GHA output
-        run: echo $EXIST_VER
+      # DP: this dynamically set the version from develop
+      # no longer necessary
+      # - name: Get SemVer string from test image
+      #   run: |
+      #     echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
+      # - name: Test GHA output
+      #   run: echo $EXIST_VER
 
       # PUSH
       # Latest

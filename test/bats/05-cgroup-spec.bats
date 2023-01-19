@@ -7,7 +7,6 @@
 # -v ./exist/autodeploy:/exist/autodeploy
 
 @test "create cgroup container" {
-  skip
   run docker create -it -p 8899:8080  -m 500m --cpus="0.5" --name cgroup --rm duncdrum/existdb
   [ "$status" -eq 0 ]
   run docker start cgroup
@@ -16,7 +15,6 @@
 
 # Tests for modifying container memory
 @test "memory flag is used at startup" {
-  skip
   result=$(docker ps | grep -o 'cgroup')
   [ "$result" == 'cgroup' ]
   sleep 30
@@ -35,13 +33,11 @@
 
 # Check for cgroup config warning 
 @test "check logs for cgroup file warning" {
-  skip
   result=$(docker logs cgroup | grep -ow -c 'Unable to open cgroup memory limit file' || true )
   [ "$result" -eq 0 ]
 }
 
 @test "teardown cgroup container" {
-  skip
   run docker stop cgroup
   [ "$status" -eq 0 ]
   [ "$output" == "cgroup" ] 

@@ -59,7 +59,7 @@ jobs:
 
       # BUILD
       - name: Build default images for testing on CI
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
@@ -67,7 +67,7 @@ jobs:
           tags: ${{ env.TEST_TAG }}
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           build-args: DISTRO_TAG=debug
@@ -76,7 +76,7 @@ jobs:
           tags: ${{ env.TEST_TAG }}-debug
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           build-args: |
@@ -117,7 +117,7 @@ jobs:
       # Latest
       - name: Push :latest to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -132,7 +132,7 @@ jobs:
 
       - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -149,7 +149,7 @@ jobs:
 
       - name: push :nonroot (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -168,7 +168,7 @@ jobs:
       # Release
       - name: Push :release to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -184,7 +184,7 @@ jobs:
 
       - name: Push :debug (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -202,7 +202,7 @@ jobs:
 
       - name: Push :nonroot (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

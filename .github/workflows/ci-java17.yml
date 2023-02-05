@@ -1,9 +1,9 @@
-name: Java 11 :release
+name: Java 17 :latest
 on: 
   push:
   pull_request:
   schedule: 
-      - cron: "11 4 * * *"
+      - cron: "11 */8 * * *"
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
@@ -22,11 +22,11 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: '11'
+          java-version: '17'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -62,8 +62,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile_j11
-          build-args: BRANCH=master
+          file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}
 
@@ -71,10 +70,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          build-args: |
-            BRANCH=master
-            DISTRO_TAG=debug
-          file: ./Dockerfile_j11
+          build-args: DISTRO_TAG=debug
+          file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-debug
 
@@ -83,10 +80,9 @@ jobs:
         with:
           context: .
           build-args: |
-            BRANCH=master
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
-          file: ./Dockerfile_j11
+          file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-nonroot   
 
@@ -109,65 +105,62 @@ jobs:
       - name: Run tests
         run: bats --tap test/bats/*.bats
 
-      # DP: this dynamically set the version from master
+      # DP: this dynamically set the version from develop
       # no longer necessary
-      - name: Get SemVer string from test image
-        run: |
-          echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
-      - name: Test GHA output
-        run: echo $EXIST_VER
+      # - name: Get SemVer string from test image
+      #   run: |
+      #     echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
+      # - name: Test GHA output
+      #   run: echo $EXIST_VER
 
       # PUSH
-      # Release
-      - name: Push :release to Dockerhub
+      # Latest
+      - name: Push :latest to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
-          file: ./Dockerfile_j11
-          build-args: BRANCH=master
+          file: ./Dockerfile
+          build-args: BRANCH=develop
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release
+            ${{ secrets.DOCKER_USERNAME }}/existdb:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
-      - name: Push :debug (release) to Dockerhub
+      - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
-          file: ./Dockerfile_j11
+          file: ./Dockerfile
           build-args: |
             DISTRO_TAG=debug
-            BRANCH=master
+            BRANCH=develop
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug
+            ${{ secrets.DOCKER_USERNAME }}/existdb:debug
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
 
-      - name: Push :nonroot (release) to Dockerhub
+      - name: push :nonroot (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v4
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
-          file: ./Dockerfile_j11
+          file: ./Dockerfile
           build-args: |
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
-            BRANCH=master
+            BRANCH=develop
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-nonroot
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-nonroot
+            ${{ secrets.DOCKER_USERNAME }}/existdb:nonroot
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max      

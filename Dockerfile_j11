@@ -22,7 +22,7 @@
 
 ARG DISTRO_TAG=latest
 
-FROM maven:3-eclipse-temurin-17 as builder
+FROM maven:3-eclipse-temurin-11 as builder
 ARG BRANCH=develop
 
 # TODO (DP) add cache mount ?
@@ -36,7 +36,7 @@ mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=fal
 
 
 
-FROM gcr.io/distroless/java17:${DISTRO_TAG}
+FROM gcr.io/distroless/java11-debian11:${DISTRO_TAG}
 
 ARG USR=root
 
@@ -70,8 +70,6 @@ ENV JAVA_TOOL_OPTIONS \
   -Dexist.configurationFile=/exist/etc/conf.xml \
   -Djetty.home=/exist \
   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
-  -XX:+UseNUMA \
-  -XX:+UseZGC \
   -XX:+UseStringDeduplication \
   -XX:+UseContainerSupport \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \

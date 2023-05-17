@@ -23,7 +23,7 @@
 ARG DISTRO_TAG=latest
 
 FROM maven:3-eclipse-temurin-11 as builder
-ARG BRANCH=develop
+ARG BRANCH=master
 
 # TODO (DP) add cache mount ?
 RUN git clone --single-branch --branch=${BRANCH} --depth=1 https://github.com/eXist-db/exist.git

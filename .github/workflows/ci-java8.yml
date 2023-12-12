@@ -58,11 +58,12 @@ jobs:
       #   run: saxonb-xslt -s:dump/exist-distribution-${{ env.EXIST_VER }}/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
 
       # BUILD
+      # see https://github.com/eXist-db/exist/issues/4911
       - name: Build local images for testing on CI
         uses: docker/build-push-action@v5
         with:
           context: .
-          build-args: BRANCH=master
+          build-args: BRANCH=develop-6.x.x
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}
@@ -73,7 +74,7 @@ jobs:
           context: .
           build-args: |
             DISTRO_TAG=debug
-            BRANCH=master
+            BRANCH=develop-6.x.x
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug
@@ -83,7 +84,7 @@ jobs:
         with:
           context: .
           build-args: |
-            BRANCH=master
+            BRANCH=develop-6.x.x
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
           file: ./Dockerfile_j8
@@ -116,7 +117,7 @@ jobs:
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
-          build-args: BRANCH=master
+          build-args: BRANCH=develop-6.x.x
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
@@ -134,7 +135,7 @@ jobs:
           file: ./Dockerfile_j8
           build-args: |
             DISTRO_TAG=debug
-            BRANCH=master
+            BRANCH=develop-6.x.x
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
@@ -153,7 +154,7 @@ jobs:
           build-args: |
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
-            BRANCH=master
+            BRANCH=develop-6.x.x
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |

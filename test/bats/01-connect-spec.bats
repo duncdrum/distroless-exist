@@ -30,6 +30,11 @@
   [ "$result" -eq 0 ]
 }
 
+@test "no fatalities in logs" {
+  result=$(docker logs exist | grep -ow -c 'FATAL' || true)
+  [ "$result" -eq 0 ]
+}
+
 # Only appears on boot with non empty autodeploy directory
 @test "logs contain repo.log output" {
   result=$(docker logs exist-ci | grep -o -m 1 'Deployment.java')

@@ -1,4 +1,5 @@
-name: Java 8 :release
+name: Java 8 :dev6
+# was :release see #35
 on: 
   push:
   pull_request:
@@ -7,7 +8,7 @@ on:
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
-  EXIST_VER: 6.2.0
+  # EXIST_VER: 6.2.0
 
 jobs:
   build:
@@ -58,14 +59,17 @@ jobs:
       #   run: saxonb-xslt -s:dump/exist-distribution-${{ env.EXIST_VER }}/etc/log4j2.xml -xsl:log4j2-docker.xslt -o:log4j2.xml
 
       # BUILD
+      # see https://github.com/eXist-db/exist/issues/4911
       - name: Build local images for testing on CI
         uses: docker/build-push-action@v5
         with:
           context: .
-          build-args: BRANCH=master
+          build-args: BRANCH=develop-6.x.x
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v5
@@ -73,22 +77,26 @@ jobs:
           context: .
           build-args: |
             DISTRO_TAG=debug
-            BRANCH=master
+            BRANCH=develop-6.x.x
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Build nonroot images for testing on CI
         uses: docker/build-push-action@v5
         with:
           context: .
           build-args: |
-            BRANCH=master
+            BRANCH=develop-6.x.x
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
           file: ./Dockerfile_j8
           load: true
-          tags: ${{ env.TEST_TAG }}-nonroot        
+          tags: ${{ env.TEST_TAG }}-nonroot
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max         
 
       # TEST
       - name: Start exist-ci container
@@ -101,31 +109,31 @@ jobs:
         run: bats --tap test/bats/*.bats
       
       # DP: This is dynamically setting Version number of latest
-      - name: Get SemVer string from test image
-        run: |
-          echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
-      - name: Test GHA output
-        run: echo $EXIST_VER
+      # no longer necessary
+      # - name: Get SemVer string from test image
+      #   run: |
+      #     echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
+      # - name: Test GHA output
+      #   run: echo $EXIST_VER
 
       # PUSH
       # Release
-      - name: Push :release to Dockerhub
+      - name: Push :dev6 to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
-          build-args: BRANCH=master
+          build-args: BRANCH=develop-6.x.x
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-j8
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:dev6-j8
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
-      - name: Push :debug (release) to Dockerhub
+      - name: Push :debug (dev6) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
@@ -134,16 +142,15 @@ jobs:
           file: ./Dockerfile_j8
           build-args: |
             DISTRO_TAG=debug
-            BRANCH=master
+            BRANCH=develop-6.x.x
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug-j8
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:dev6-debug-j8
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
 
-      - name: Push :nonroot (release) to Dockerhub
+      - name: Push :nonroot (dev6) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
@@ -153,11 +160,10 @@ jobs:
           build-args: |
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
-            BRANCH=master
+            BRANCH=develop-6.x.x
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-nonroot-j8
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-nonroot-j8
+            ${{ secrets.DOCKER_USERNAME }}/existdb:dev6-nonroot-j8
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max                  

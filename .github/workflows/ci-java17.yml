@@ -65,6 +65,8 @@ jobs:
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v5
@@ -74,6 +76,8 @@ jobs:
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-debug
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Build nonroot images for testing on CI
         uses: docker/build-push-action@v5
@@ -84,7 +88,9 @@ jobs:
             USR=nonroot:nonroot
           file: ./Dockerfile
           load: true
-          tags: ${{ env.TEST_TAG }}-nonroot   
+          tags: ${{ env.TEST_TAG }}-nonroot
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max  
 
       # TEST
       - name: Start exist-ci containers

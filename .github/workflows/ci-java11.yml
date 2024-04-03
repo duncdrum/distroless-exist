@@ -1,4 +1,5 @@
-name: Java 11 :release
+name: Java 11 :dev6
+# was :release
 on: 
   push:
   pull_request:
@@ -67,6 +68,8 @@ jobs:
           build-args: BRANCH=develop-6.x.x
           load: true
           tags: ${{ env.TEST_TAG }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v5
@@ -78,6 +81,8 @@ jobs:
           file: ./Dockerfile_j11
           load: true
           tags: ${{ env.TEST_TAG }}-debug
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       - name: Build nonroot images for testing on CI
         uses: docker/build-push-action@v5
@@ -89,7 +94,9 @@ jobs:
             USR=nonroot:nonroot
           file: ./Dockerfile_j11
           load: true
-          tags: ${{ env.TEST_TAG }}-nonroot   
+          tags: ${{ env.TEST_TAG }}-nonroot
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
       # TEST
       - name: Start exist-ci containers
@@ -112,15 +119,15 @@ jobs:
 
       # DP: this dynamically set the version from develop-6.x.x
       # no longer necessary
-      - name: Get SemVer string from test image
-        run: |
-          echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
-      - name: Test GHA output
-        run: echo $EXIST_VER
+      # - name: Get SemVer string from test image
+      #   run: |
+      #     echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
+      # - name: Test GHA output
+      #   run: echo $EXIST_VER
 
       # PUSH
       # Release
-      - name: Push :release to Dockerhub
+      - name: Push :dev6 to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
@@ -131,12 +138,11 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release
+            ${{ secrets.DOCKER_USERNAME }}/existdb:dev6
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 
-      - name: Push :debug (release) to Dockerhub
+      - name: Push :debug (dev6) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
@@ -149,12 +155,11 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-debug
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-debug
+            ${{ secrets.DOCKER_USERNAME }}/existdb:dev6-debug
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
 
-      - name: Push :nonroot (release) to Dockerhub
+      - name: Push :nonroot (dev6) to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
@@ -168,7 +173,6 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.EXIST_VER }}-nonroot
-            ${{ secrets.DOCKER_USERNAME }}/existdb:release-nonroot
+            ${{ secrets.DOCKER_USERNAME }}/existdb:dev6-nonroot
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max     

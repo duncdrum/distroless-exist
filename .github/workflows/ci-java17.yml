@@ -59,7 +59,7 @@ jobs:
 
       # BUILD
       - name: Build default images for testing on CI
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
@@ -68,7 +68,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: DISTRO_TAG=debug
@@ -78,7 +78,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
@@ -120,7 +120,7 @@ jobs:
       # Latest
       - name: Push :latest to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -135,7 +135,7 @@ jobs:
 
       - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -152,7 +152,7 @@ jobs:
 
       - name: push :nonroot (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

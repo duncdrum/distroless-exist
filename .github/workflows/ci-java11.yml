@@ -61,7 +61,7 @@ jobs:
       # BUILD
       # see https://github.com/eXist-db/exist/issues/4911
       - name: Build default images for testing on CI
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile_j11
@@ -71,7 +71,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
@@ -83,7 +83,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
@@ -126,7 +126,7 @@ jobs:
       # Release
       - name: Push :dev6 to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -141,7 +141,7 @@ jobs:
 
       - name: Push :debug (dev6) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -158,7 +158,7 @@ jobs:
 
       - name: Push :nonroot (dev6) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

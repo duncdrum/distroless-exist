@@ -36,7 +36,7 @@ mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=fal
 
 
 
-FROM gcr.io/distroless/java-base-debian11:${DISTRO_TAG}
+FROM gcr.io/distroless/java-base-debian12:${DISTRO_TAG}
 
 ARG USR=root
 

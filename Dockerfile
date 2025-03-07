@@ -22,7 +22,7 @@
 
 ARG DISTRO_TAG=latest
 
-FROM maven:3-eclipse-temurin-17 as builder
+FROM maven:3-eclipse-temurin-21 as builder
 ARG BRANCH=develop
 
 # TODO (DP) add cache mount ?
@@ -36,7 +36,7 @@ mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=fal
 
 
 
-FROM gcr.io/distroless/java17-debian12:${DISTRO_TAG}
+FROM gcr.io/distroless/java21-debian12:${DISTRO_TAG}
 
 ARG USR=root
 

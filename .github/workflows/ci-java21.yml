@@ -7,6 +7,7 @@ on:
 
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
+  IMAGE_TAG: latest
   # EXIST_VER: 6.2.0
 
 jobs:
@@ -129,7 +130,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:latest
+            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.IMAGE_TAG }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
 

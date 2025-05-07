@@ -113,12 +113,11 @@ jobs:
         run: bats --tap test/bats/*.bats
       
       # DP: This is dynamically setting Version number of latest
-      # no longer necessary
-      # - name: Get SemVer string from test image
-      #   run: |
-      #     echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
-      # - name: Test GHA output
-      #   run: echo $EXIST_VER
+      - name: Get SemVer string from test image
+        run: |
+          echo "EXIST_VER=$(docker exec exist-ci java org.exist.start.Main client --no-gui --xpath 'system:get-version()' | grep -i 'eXist version' | cut -d ' ' -f 3)" >> $GITHUB_ENV
+      - name: Test GHA output
+        run: echo $EXIST_VER
 
       # PUSH
       # Release
@@ -136,6 +135,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-j8
+            ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-j8
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
 
@@ -155,6 +155,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug-j8
+            ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-debug-j8
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
 
@@ -175,5 +176,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot-j8
+            ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-nonroot-j8
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max                  

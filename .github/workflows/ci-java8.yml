@@ -8,6 +8,7 @@ on:
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
   IMAGE_TAG: release
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/existdb
   # EXIST_VER: 6.2.0
 
 jobs:
@@ -47,6 +48,12 @@ jobs:
         with:
           install: true
 
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          
       - name: Install bats
         # run: sudo apt-get install bats libsaxonb-java
         run: sudo apt-get install bats
@@ -68,7 +75,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v6
@@ -80,7 +87,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build nonroot images for testing on CI
         uses: docker/build-push-action@v6
@@ -93,7 +100,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-nonroot
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       # TEST
       - name: Start exist-ci container
@@ -125,10 +132,12 @@ jobs:
           build-args: BRANCH=master
           builder: ${{ steps.buildx.outputs.name }}
           push: true
+          sbom: true
+          labels: ${{ steps.meta.outputs.labels }}
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.IMAGE_TAG }}-j8
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max 
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-j8
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
 
       - name: Push :debug (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -142,10 +151,12 @@ jobs:
             BRANCH=master
           builder: ${{ steps.buildx.outputs.name }}
           push: true
+          sbom: true
+          labels: ${{ steps.meta.outputs.labels }}
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.IMAGE_TAG }}-debug-j8
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug-j8
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
 
       - name: Push :nonroot (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -160,7 +171,9 @@ jobs:
             BRANCH=master
           builder: ${{ steps.buildx.outputs.name }}
           push: true
+          sbom: true
+          labels: ${{ steps.meta.outputs.labels }}
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/existdb:${{ env.IMAGE_TAG }}-nonroot-j8
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/existdb:buildcache,mode=max                  
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot-j8
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max                  

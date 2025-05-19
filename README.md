@@ -17,7 +17,7 @@ The images are based on Google Cloud Platform's ["Distroless" Docker Images](htt
 ## Requirements 
 
 *   [Docker](https://www.docker.com): `18-stable`
-*   
+
 ### Build Requirements
 
 *   [Docker](https://www.docker.com): `19.03`
@@ -34,7 +34,7 @@ There are two continuously updated channels:
 
 Multi-arch Images are currently produced for `linux/amd64` and `linux/arm64`.
 
-To download tanhe image run:
+To download the image run:
 
 ```bash
 docker pull duncdrum/existdb:latest
@@ -68,6 +68,7 @@ or if you omitted the `-d` flag earlier press `CTRL-C` inside the terminal showi
 
 <!-- TODO(DP) see #7  -->
 <!-- `docker build --build-arg BRANCH=master -t duncdrum/existdb:release . ` -->
+<!-- docker buildx build --build-arg BRANCH=eXist-6.4.0 --build-arg IMG_FLAVOR=slim  --platform linux/amd64,linux/arm64 -t duncdrum/existdb:6.4.0-j8-slim -f Dockerfile_j8 . -->
 
 ### Interacting with the running container
 

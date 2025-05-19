@@ -180,4 +180,45 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:nonroot
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max      
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=
+          
+      # SLIM
+
+      - name: Push :latest-slim to Dockerhub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile
+          build-args: |
+            FLAVOR=slim
+            BRANCH=develop
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          sbom: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-slim
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
+
+      - name: Push :debug-slim (latest) to Dockerhub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile
+          build-args: |
+            DISTRO_TAG=debug
+            FLAVOR=slim
+            BRANCH=develop
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          sbom: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:debug-slim
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max

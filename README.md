@@ -2,7 +2,9 @@
 
 Minimal Docker Image of eXist-db NoSQL Database Client/Server with FO support
 
-[![Build Status](https://travis-ci.com/eXist-db/exist.png?branch=develop)](https://travis-ci.com/eXist-db/exist)
+[![Java 21 :latest](https://github.com/duncdrum/distroless-exist/actions/workflows/ci-java21.yml/badge.svg)](https://github.com/duncdrum/distroless-exist/actions/workflows/ci-java21.yml)
+[![Java 11 :release](https://github.com/duncdrum/distroless-exist/actions/workflows/ci-java11.yml/badge.svg)](https://github.com/duncdrum/distroless-exist/actions/workflows/ci-java11.yml)
+[![Java 8 :release](https://github.com/duncdrum/distroless-exist/actions/workflows/ci-java8.yml/badge.svg)](https://github.com/duncdrum/distroless-exist/actions/workflows/ci-java8.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c5d7a02842dd4a3c85b1b2ad421b0d13)](https://www.codacy.com/app/eXist-db/exist?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eXist-db/exist&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/license-AGPL%203.1-orange.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 [![](https://images.microbadger.com/badges/image/duncdrum/existdb.svg)](https://microbadger.com/images/duncdrum/existdb "Get your own image badge on microbadger.com")
@@ -17,24 +19,37 @@ The images are based on Google Cloud Platform's ["Distroless" Docker Images](htt
 ## Requirements 
 
 *   [Docker](https://www.docker.com): `18-stable`
-*   
+
 ### Build Requirements
 
 *   [Docker](https://www.docker.com): `19.03`
-*   [java](https://www.java.com/): `11`
 *   [bats](https://github.com/bats-core/bats-core): `^1.1.0` (for testing)
 *   [buildx](https://docs.docker.com/buildx/working-with-buildx/)
 
 ## How to use
 
-Pre-build images are available on [DockerHub](https://hub.docker.com/r/duncdrum/existdb/). 
-There are two continuously updated channels:
+Multi-arch images are currently produced for `linux/amd64` and `linux/arm64`. Pre-build images are available on [DockerHub](https://hub.docker.com/r/duncdrum/existdb/). 
+The tagging scheme is: `$EXIST_VERSION$-$DISTROLESS_FLAVOR$-$JAVA_VERSION$-$IMG_FLAVOR$`. For exist-dbs version are two moving tags:
 *   `release` for the stable releases based on the [`master` branch](https://github.com/eXist-db/exist/tree/master)
-*   `latest` for the latest commit to the [`develop` branch](https://github.com/eXist-db/exist/tree/develop).
+*   `latest` (default) for the latest commit to the [`develop` branch](https://github.com/eXist-db/exist/tree/develop).
+*   next to the semantic version of each supported exist release (e.g.: `6.2.0`)
+  
+Distroless flavors:
+*   s.a. `nonroot`, `debug`, or no  tag (default)
+  
 
-Multi-arch Images are currently produced for `linux/amd64` and `linux/arm64`.
+Java version
+*   for exist v6: `j8` or `j11` (default)
+*   for exist v7 `j21` (no tag) (default)
 
-To download tanhe image run:
+Image flavor
+*   `slim` has and empty `autodeploy` folder
+*   `full` (default) with stock apps in autodeploy
+
+
+
+
+To download the image run:
 
 ```bash
 docker pull duncdrum/existdb:latest
@@ -65,9 +80,6 @@ docker stop exist
 ```
 
 or if you omitted the `-d` flag earlier press `CTRL-C` inside the terminal showing the exist logs.
-
-<!-- TODO(DP) see #7  -->
-<!-- `docker build --build-arg BRANCH=master -t duncdrum/existdb:release . ` -->
 
 ### Interacting with the running container
 
@@ -251,8 +263,13 @@ Change it via the [usermanager](http://localhost:8080/exist/apps/usermanager/ind
 
 ## Building the Image
 
-<!-- TODO(DP) -->
+The images rely on modern build features and the `buildx` build tooling. The most important arguments for building are `BRANCH` for determining the exist-db version (this also takes git tags as a value); and `FLAVOR` which supports `full` for images with a populated `exist/autodeply` folder and `slim` for an empty autodeploy folder, which can be useful inside Dockerfiles using these images as a base.
 
+This build command uses a Java 8 (`-f`) base image, with no autodeploy EXPAth packages (`--build-arg FLAVOR=slim`) from the git tag `eXist-6.4.0` (`--build-arg BRANCH=…`) for `amd` and `arm` (`--platform`) architectures:
+
+```shell
+docker buildx build -t duncdrum/existdb:6.4.0-j8-slim --build-arg FLAVOR=slim --build-arg BRANCH=eXist-6.4.0 --platform linux/amd64,linux/arm64 -f Dockerfile_j8 .
+```
 
 ### Testing
 

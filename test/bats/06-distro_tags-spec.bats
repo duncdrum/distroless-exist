@@ -4,6 +4,7 @@
 # - duncdrum/existdb:exist-ci running as exist-ci
 # - duncdrum/existdb:exist-ci-debug , and 
 # - duncdrum/existdb:exist-ci-nonroot running as nonroot
+# - duncdrum/existdb:exist-ci-debug-slim as slim
 
 #  Unskip for local testing
 @test "create debug container" {
@@ -19,6 +20,11 @@
 @test "busybox should respond on debug container" {
     result=$(docker run --entrypoint whoami --name busybox --rm duncdrum/existdb:exist-ci-debug)
     [ "$result" == "root" ]
+}
+
+@test "autodeploy should be full on debug container" {
+    result=$(docker run --entrypoint ls -w /exist/autodeploy --name autoempty --rm duncdrum/existdb:exist-ci-debug | wc -l)
+    [ "$result" -gt 1 ]
 }
 
 @test "busybox should not respond on latest container" {

@@ -21,7 +21,7 @@
 #
 
 ARG DISTRO_TAG=latest
-ARG FlAVOR=full
+ARG FLAVOR=full
 
 FROM maven:3-eclipse-temurin-21 AS builder
 ARG BRANCH=develop
@@ -46,7 +46,7 @@ ARG USR=root
 ONBUILD COPY --from=builder --chown=${USR} /no-auto /exist/autodeploy
 
 
-FROM build_${FlAVOR}
+FROM build_${FLAVOR}
 ARG USR=root
 # Copy eXist-db
 COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-*-dir/LICENSE /exist/LICENSE

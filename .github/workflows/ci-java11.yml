@@ -102,6 +102,19 @@ jobs:
           tags: ${{ env.TEST_TAG }}-nonroot
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
+      - name: Build debug-slim images for testing on CI
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          build-args: |
+            DISTRO_TAG=debug
+            FLAVOR=slim
+            BRANCH=master
+          file: ./Dockerfile_j11
+          load: true
+          tags: ${{ env.TEST_TAG }}-debug-slim
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+
       # TEST
       - name: Start exist-ci containers
         run: |
@@ -229,5 +242,27 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug-slim
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-debug-slim
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Push :nonroot-slim (${{ env.IMAGE_TAG }}) to Dockerhub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile_j11
+          build-args: |
+            DISTRO_TAG=nonroot
+            FLAVOR=slim
+            USR=nonroot:nonroot
+            BRANCH=master
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          sbom: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot-slim
+            ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-nonroot-slim
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max

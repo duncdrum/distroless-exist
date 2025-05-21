@@ -41,7 +41,7 @@ ARG USR=root
 ONBUILD COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-*-dir/autodeploy /exist/autodeploy
 
 
-FROM gcr.io/distroless/java-base-debian12:${DISTRO_TAG} AS build_slim
+FROM gcr.io/distroless/java21-debian12:${DISTRO_TAG} AS build_slim
 ARG USR=root
 ONBUILD COPY --from=builder --chown=${USR} /no-auto /exist/autodeploy
 

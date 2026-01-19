@@ -44,7 +44,11 @@ target/
 dump/*
 !dump/exist-distribution-*/
 
+reports/*
+
 # Copied files from test runs
 /conf.xml
 /conf.xml.bak
 
+# GitHub token file (local builds)
+.github_token

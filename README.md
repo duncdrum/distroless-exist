@@ -83,7 +83,7 @@ or if you omitted the `-d` flag earlier press `CTRL-C` inside the terminal showi
 
 ### Interacting with the running container
 
-You can interact with a running container as if it were a regular Linux host (without a shell in our case). 
+You can interact with a running container as if it were a regular Linux host (without a shell in our case).
 You can issue shell-like commands to the Java admin client, as we do throughout this readme, but you can't open the shell in interactive mode.
 
 The name of the container in this readme is `exist`, adjust the name in the commands to suit your needs:
@@ -96,7 +96,7 @@ docker exec exist java org.exist.start.Main client --no-gui --xpath "system:get-
 docker exec exist java -version
 ```
 
-Containers build from this image run periodical healthchecks to ensure that eXist-db is operating normally. 
+Containers build from this image run periodical health checks to ensure that eXist-db is operating normally.
 If `docker ps` reports `unhealthy` you can get a more detailed report with this command:  
 
 ```bash
@@ -114,12 +114,12 @@ This works best when providing the `-t` flag when running an image.
 
 ## Use as base image
 
-A common usage of these images is as a base image for your own applications. 
+A common usage of these images is as a base image for your own applications.
 We'll take a quick look at three scenarios of increasing complexity, to demonstrate how to achieve common tasks from inside `Dockerfile`.
 
 ### A simple app image
 
-The simplest and straightforward case assumes that you have a `.xar` app inside a `build` folder on the same level as the `Dockerfile`. 
+The simplest and straightforward case assumes that you have a `.xar` app inside a `build` folder on the same level as the `Dockerfile`.
 To get an image of an eXist-db instance with your app installed and running, simply adopt the `docker cp ...` command to the appropriate `Dockerfile` syntax.
 ```docker
 FROM duncdrum/existdb:6.0.1
@@ -137,14 +137,14 @@ Step 2/2 : COPY build/*.xar /exist/autodeploy
  ---> ace38b0809de
 ```
 
-The result is a new image of your app installed into eXist-db. 
-Since you didn't provide further instructions it will simply reuse the `EXPOSE`, `CMD`, `HEALTHCHECK`, etc instructions defined by the base image. 
+The result is a new image of your app installed into eXist-db.
+Since you didn't provide further instructions it will simply reuse the `EXPOSE`, `CMD`, `HEALTHCHECK`, etc instructions defined by the base image.
 You can now publish this image to a docker registry and share it with others.
 
 ### A slightly more complex single stage image
 
-The following example will install your app, but also modify the underlying eXist-db instance in which your app is running. 
-Instead of a local build directory, we'll download the `.xar` from the web, and copy a modified `conf.xml` from a `src/` directory along side your `Dockerfile`. 
+The following example will install your app, but also modify the underlying eXist-db instance in which your app is running.
+Instead of a local build directory, we'll download the `.xar` from the web, and copy a modified `conf.xml` from a `src/` directory along side your `Dockerfile`.
 To execute any of the `docker exec …` style commands from this readme, we need to use `RUN`.
 
 ```docker
@@ -171,7 +171,7 @@ Chances are, you wouldn't change the admin password very often, but the `.xar` m
 ### Multi-stage build with ant
 
 Lastly, you can eliminate external dependencies even further by using a multi-stage build. 
-To ensure compatibility between different Java engines we recommend sticking with debian based images for the builder stage.
+To ensure compatibility between different Java engines we recommend sticking with Debian based images for the builder stage.
 
 The following 2-stage build will download and install `ant` and `nodeJS` into a builder stage which then downloads frontend dependencies before building the `.xar` file.
 The second stage (each `FROM` begins a stage) is just the simple example from above. 
@@ -263,13 +263,30 @@ Change it via the [usermanager](http://localhost:8080/exist/apps/usermanager/ind
 
 ## Building the Image
 
-The images rely on modern build features and the `buildx` build tooling. The most important arguments for building are `BRANCH` for determining the exist-db version (this also takes git tags as a value); and `FLAVOR` which supports `full` for images with a populated `exist/autodeply` folder and `slim` for an empty autodeploy folder, which can be useful inside Dockerfiles using these images as a base.
+The images rely on modern build features and the `buildx` build tooling. The most important arguments for building are `BRANCH` for determining the exist-db version (this also takes git tags as a value); and `FLAVOR` which supports `full` for images with a populated `exist/autodeply` folder and `slim` for an empty `autodeploy` folder, which can be useful inside Dockerfiles using these images as a base.
+
+### GitHub Authentication Required
+
+Building these images requires access to GitHub Packages Maven registry for dependencies. You need:
+
+1. **A GitHub Personal Access Token (PAT)** with `read:packages` scope (or `write:packages` which includes read access)
+2. **Access to the eXist-db organization** packages
+
+The token must be passed as a BuildKit secret during the build.
 
 This build command uses a Java 8 (`-f`) base image, with no autodeploy EXPAth packages (`--build-arg FLAVOR=slim`) from the git tag `eXist-6.4.0` (`--build-arg BRANCH=…`) for `amd` and `arm` (`--platform`) architectures:
 
 ```shell
-docker buildx build -t duncdrum/existdb:6.4.0-j8-slim --build-arg FLAVOR=slim --build-arg BRANCH=eXist-6.4.0 --platform linux/amd64,linux/arm64 -f Dockerfile_j8 .
+docker buildx build -t duncdrum/existdb:6.4.0-j8-slim \
+  --build-arg FLAVOR=slim \
+  --build-arg BRANCH=eXist-6.4.0 \
+  --build-arg GITHUB_USERNAME=your-username \
+  --secret id=github_token,src=.github_token \
+  --platform linux/amd64,linux/arm64 \
+  -f Dockerfile_j8 .
 ```
+
+**Note:** `DOCKER_BUILDKIT=1` is required (or use `docker buildx build`) because the Dockerfiles use BuildKit features (`--mount=type=secret` and `--mount=type=cache`).
 
 ### Testing
 
@@ -281,7 +298,7 @@ To execute them run:
 bats exist-docker/src/test/bats/*.bats 
 ```
 
-The tests use fixtures and are creating a modified image call `ex-mod`. By default they expect a name container `exist-ci` to be up and running. When running test locally you must ensure that no previous image `ex-mod` exists, and that `exist-ci` is running before starting the testsuite. 
+The tests use fixtures and are creating a modified image call `ex-mod`. By default they expect a name container `exist-ci` to be up and running. When running test locally you must ensure that no previous image `ex-mod` exists, and that `exist-ci` is running before starting the test-suite. 
 
 ### Available Arguments and Defaults
 
@@ -326,7 +343,7 @@ this can lead to frequent crashes since Java8 and Docker are (literally) not on 
 
 Instead, use the `-XX:MaxRAMPercentage` argument to modify the memory available to the JVM *inside* the container. 
 The default of `75%` should be save for production use. 
-To allocate e.g. 600mb to the container *around* the JVM use, however, you can tweak this at buildtime via the `JVM_MAX_RAM_PERCENTAGE` argument. Note that percentages should include a decimal point `80.0` = `80%`.
+To allocate e.g. 600mb to the container *around* the JVM use, however, you can tweak this at build time via the `JVM_MAX_RAM_PERCENTAGE` argument. Note that percentages should include a decimal point `80.0` = `80%`.
 
 To allocate e.g. 600mb to the container around the JVM use:
 

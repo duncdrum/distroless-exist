@@ -50,3 +50,5 @@ reports/*
 /conf.xml
 /conf.xml.bak
 
+# GitHub token file (local builds)
+.github_token

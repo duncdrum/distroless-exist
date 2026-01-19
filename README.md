@@ -265,11 +265,28 @@ Change it via the [usermanager](http://localhost:8080/exist/apps/usermanager/ind
 
 The images rely on modern build features and the `buildx` build tooling. The most important arguments for building are `BRANCH` for determining the exist-db version (this also takes git tags as a value); and `FLAVOR` which supports `full` for images with a populated `exist/autodeply` folder and `slim` for an empty autodeploy folder, which can be useful inside Dockerfiles using these images as a base.
 
+### GitHub Authentication Required
+
+Building these images requires access to GitHub Packages Maven registry for dependencies. You need:
+
+1. **A GitHub Personal Access Token (PAT)** with `read:packages` scope (or `write:packages` which includes read access)
+2. **Access to the eXist-db organization** packages
+
+The token must be passed as a BuildKit secret during the build. See `reports/BUILD_LOCAL.md` for detailed local build instructions.
+
 This build command uses a Java 8 (`-f`) base image, with no autodeploy EXPAth packages (`--build-arg FLAVOR=slim`) from the git tag `eXist-6.4.0` (`--build-arg BRANCH=…`) for `amd` and `arm` (`--platform`) architectures:
 
 ```shell
-docker buildx build -t duncdrum/existdb:6.4.0-j8-slim --build-arg FLAVOR=slim --build-arg BRANCH=eXist-6.4.0 --platform linux/amd64,linux/arm64 -f Dockerfile_j8 .
+docker buildx build -t duncdrum/existdb:6.4.0-j8-slim \
+  --build-arg FLAVOR=slim \
+  --build-arg BRANCH=eXist-6.4.0 \
+  --build-arg GITHUB_USERNAME=your-username \
+  --secret id=github_token,src=.github_token \
+  --platform linux/amd64,linux/arm64 \
+  -f Dockerfile_j8 .
 ```
+
+**Note:** `DOCKER_BUILDKIT=1` is required (or use `docker buildx build`) because the Dockerfiles use BuildKit features (`--mount=type=secret` and `--mount=type=cache`).
 
 ### Testing
 

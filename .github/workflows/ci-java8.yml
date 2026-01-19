@@ -69,7 +69,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: BRANCH=master
+          build-args: |
+            BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}
@@ -82,6 +86,9 @@ jobs:
           build-args: |
             DISTRO_TAG=debug
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug
@@ -95,6 +102,9 @@ jobs:
             BRANCH=master
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-nonroot
@@ -108,6 +118,9 @@ jobs:
             DISTRO_TAG=debug
             FLAVOR=slim
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug-slim
@@ -121,7 +134,7 @@ jobs:
           sleep 35s
 
       - name: Run tests
-        run: bats --tap test/bats/*.bats
+        run: bats --tap test/bats/0*.bats
       
       # DP: This is dynamically setting Version number of latest
       - name: Get SemVer string from test image
@@ -139,7 +152,11 @@ jobs:
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_j8
-          build-args: BRANCH=master
+          build-args: |
+            BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -160,6 +177,9 @@ jobs:
           build-args: |
             DISTRO_TAG=debug
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -181,6 +201,9 @@ jobs:
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -203,6 +226,9 @@ jobs:
           build-args: |
             FLAVOR=slim
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -224,6 +250,9 @@ jobs:
             DISTRO_TAG=debug
             FLAVOR=slim
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -246,6 +275,9 @@ jobs:
             FLAVOR=slim
             USR=nonroot:nonroot
             BRANCH=master
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true

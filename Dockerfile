@@ -25,14 +25,32 @@ ARG FLAVOR=full
 
 FROM maven:3-eclipse-temurin-21 AS builder
 ARG BRANCH=develop
+ARG GITHUB_USERNAME
 # TODO (DP) add cache mount ?
 RUN git clone --single-branch --branch=${BRANCH} --depth=1 https://github.com/eXist-db/exist.git
 RUN mkdir no-auto
 
 WORKDIR /exist
+# Copy Maven settings template
+COPY settings.xml.template /tmp/settings.xml.template
+# Configure Maven settings.xml with GitHub authentication
+# The secret is required for accessing GitHub Maven registry dependencies
+# According to https://hub.docker.com/_/maven/, settings.xml in /usr/share/maven/ref/ is automatically used
 # Yay for buildkit
+# Create settings.xml and run Maven in the same step to ensure settings.xml is available
+# The cache mount for /root/.m2 is set up, then we create settings.xml, then run mvn
 RUN --mount=type=cache,id=maven,target=/root/.m2 \
-mvn -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Dizpack-signing=false -Denv.CI=true -P '!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks' package
+    --mount=type=secret,id=github_token \
+    sh -c 'mkdir -p /root/.m2 && \
+        GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
+        GITHUB_USERNAME="${GITHUB_USERNAME:-duncdrum}" && \
+        awk -v username="$GITHUB_USERNAME" -v token="$GITHUB_TOKEN" \
+            "{gsub(/\\$\\{GITHUB_USERNAME\\}/, username); gsub(/\\$\\{GITHUB_TOKEN\\}/, token); print}" \
+            /tmp/settings.xml.template > /root/.m2/settings.xml && \
+        test -f /root/.m2/settings.xml || (echo "ERROR: settings.xml not found!" && exit 1) && \
+        mvn -s /root/.m2/settings.xml -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Dizpack-signing=false -Denv.CI=true -P '\''!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks'\'' package && \
+        rm -f /root/.m2/settings.xml && \
+        echo "Cleaned up settings.xml to prevent token exposure"'
 
 
 FROM gcr.io/distroless/java21-debian12:${DISTRO_TAG} AS build_full

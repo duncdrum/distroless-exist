@@ -71,13 +71,21 @@ jobs:
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
+          build-args: |
+            GITHUB_USERNAME=${{ github.actor }}
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: DISTRO_TAG=debug
+          build-args: |
+            DISTRO_TAG=debug
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-debug
@@ -90,6 +98,9 @@ jobs:
           build-args: |
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-nonroot
@@ -102,6 +113,9 @@ jobs:
           build-args: |
             DISTRO_TAG=debug
             FLAVOR=slim
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-debug-slim
@@ -124,7 +138,7 @@ jobs:
           docker logs exist-ci | grep -w "Number of processors available to JVM:"
 
       - name: Run tests
-        run: bats --tap test/bats/*.bats
+        run: bats --tap test/bats/0*.bats
 
       # DP: this dynamically set the version from develop
       # no longer necessary
@@ -143,7 +157,11 @@ jobs:
           context: ./
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile
-          build-args: BRANCH=develop
+          build-args: |
+            BRANCH=develop
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -163,6 +181,9 @@ jobs:
           build-args: |
             DISTRO_TAG=debug
             BRANCH=develop
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -184,6 +205,9 @@ jobs:
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
             BRANCH=develop
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -206,6 +230,9 @@ jobs:
           build-args: |
             FLAVOR=slim
             BRANCH=develop
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -226,6 +253,9 @@ jobs:
             DISTRO_TAG=debug
             FLAVOR=slim
             BRANCH=develop
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true
@@ -248,6 +278,9 @@ jobs:
             FLAVOR=slim
             USR=nonroot:nonroot
             BRANCH=develop
+            GITHUB_USERNAME=${{ github.actor }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           sbom: true

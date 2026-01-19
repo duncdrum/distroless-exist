@@ -48,7 +48,7 @@ RUN --mount=type=cache,id=maven,target=/root/.m2 \
             "{gsub(/\\$\\{GITHUB_USERNAME\\}/, username); gsub(/\\$\\{GITHUB_TOKEN\\}/, token); print}" \
             /tmp/settings.xml.template > /root/.m2/settings.xml && \
         test -f /root/.m2/settings.xml || (echo "ERROR: settings.xml not found!" && exit 1) && \
-        mvn -s /root/.m2/settings.xml -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Dizpack-signing=false -Denv.CI=true -P '\''!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks'\'' package && \
+        mvn -s /root/.m2/settings.xml -q -DskipTests -Ddocker=false -Ddependency-check.skip=true -Dmac.signing=false -Dizpack-signing=false -Denv.CI=true -P "!mac-dmg-on-unix,!installer,!concurrency-stress-tests,!micro-benchmarks" package && \
         rm -f /root/.m2/settings.xml && \
         echo "Cleaned up settings.xml to prevent token exposure"'
 

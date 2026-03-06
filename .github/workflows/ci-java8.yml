@@ -66,7 +66,7 @@ jobs:
       # BUILD
       # see https://github.com/eXist-db/exist/issues/4911
       - name: Build local images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -80,7 +80,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -95,7 +95,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -111,7 +111,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug-slim images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -147,7 +147,7 @@ jobs:
       # Release
       - name: Push :release-j8 to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -169,7 +169,7 @@ jobs:
 
       - name: Push :debug-j8 (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -192,7 +192,7 @@ jobs:
 
       - name: Push :nonroot-j8 (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -218,7 +218,7 @@ jobs:
 
       - name: Push :-j8-slim to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -241,7 +241,7 @@ jobs:
 
       - name: Push :debug-j8-slim (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -265,7 +265,7 @@ jobs:
 
       - name: Push :nonroot-j8-slim (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

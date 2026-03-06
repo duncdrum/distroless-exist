@@ -66,7 +66,7 @@ jobs:
       # BUILD
       # see https://github.com/eXist-db/exist/issues/4911
       - name: Build default images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile_j11
@@ -80,7 +80,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -95,7 +95,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -111,7 +111,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug-slim images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -156,7 +156,7 @@ jobs:
       # Release
       - name: Push :${{ env.IMAGE_TAG }} to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -178,7 +178,7 @@ jobs:
 
       - name: Push :debug (${{ env.IMAGE_TAG }}) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -201,7 +201,7 @@ jobs:
 
       - name: Push :nonroot (${{ env.IMAGE_TAG }}) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -227,7 +227,7 @@ jobs:
 
       - name: Push :${{ env.IMAGE_TAG }}-slim to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -250,7 +250,7 @@ jobs:
 
       - name: Push :debug-slim (${{ env.IMAGE_TAG }}) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -274,7 +274,7 @@ jobs:
 
       - name: Push :nonroot-slim (${{ env.IMAGE_TAG }}) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

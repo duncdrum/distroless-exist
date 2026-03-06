@@ -65,7 +65,7 @@ jobs:
 
       # BUILD
       - name: Build default images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
@@ -78,7 +78,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -92,7 +92,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build nonroot images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -107,7 +107,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
 
       - name: Build debug-slim images for testing on CI
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           build-args: |
@@ -152,7 +152,7 @@ jobs:
       # Latest
       - name: Push :latest to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -173,7 +173,7 @@ jobs:
 
       - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -196,7 +196,7 @@ jobs:
 
       - name: push :nonroot (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -222,7 +222,7 @@ jobs:
 
       - name: Push :latest-slim to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -244,7 +244,7 @@ jobs:
 
       - name: Push :debug-slim (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64
@@ -268,7 +268,7 @@ jobs:
 
       - name: push :nonroot-slim (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           platforms: linux/amd64,linux/arm64

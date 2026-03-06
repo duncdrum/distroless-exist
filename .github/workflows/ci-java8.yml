@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Make buildkit default
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         id: buildx
 
       - name: Extract metadata

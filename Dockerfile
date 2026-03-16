@@ -56,7 +56,7 @@ RUN --mount=type=cache,id=maven,target=/root/.m2 \
 FROM gcr.io/distroless/java21-debian13:${DISTRO_TAG} AS build_full
 ARG USR=root
 # Copy autodeploy folder from dist
-ONBUILD COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-dir/autodeploy /exist/autodeploy
+ONBUILD COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/autodeploy /exist/autodeploy
 
 
 FROM gcr.io/distroless/java21-debian13:${DISTRO_TAG} AS build_slim
@@ -67,9 +67,9 @@ ONBUILD COPY --from=builder --chown=${USR} /no-auto /exist/autodeploy
 FROM build_${FLAVOR}
 ARG USR=root
 # Copy eXist-db
-COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-dir/LICENSE /exist/LICENSE
-COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-dir/etc /exist/etc
-COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution-dir/lib /exist/lib
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/LICENSE /exist/LICENSE
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/etc /exist/etc
+COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/lib /exist/lib
 COPY --chown=${USR} log4j2.xml /exist/etc
 
 

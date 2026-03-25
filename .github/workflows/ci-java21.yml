@@ -5,10 +5,15 @@ on:
   schedule: 
       - cron: "11 */8 * * *"
 
+concurrency:
+  group: ci-java21-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
   IMAGE_TAG: latest
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/existdb
+  CACHE_SCOPE: java21-latest
   # EXIST_VER: 6.2.0
 
 jobs:
@@ -75,7 +80,7 @@ jobs:
             github_token=${{ secrets.GITHUB_TOKEN }}
           build-args: |
             GITHUB_USERNAME=${{ github.actor }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v7
@@ -89,7 +94,7 @@ jobs:
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-debug
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       - name: Build nonroot images for testing on CI
         uses: docker/build-push-action@v7
@@ -104,7 +109,7 @@ jobs:
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-nonroot
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       - name: Build debug-slim images for testing on CI
         uses: docker/build-push-action@v7
@@ -119,7 +124,7 @@ jobs:
           file: ./Dockerfile
           load: true
           tags: ${{ env.TEST_TAG }}-debug-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       # TEST
       - name: Start exist-ci containers
@@ -168,8 +173,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max 
 
       - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -191,8 +196,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:debug
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
 
       - name: push :nonroot (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -215,8 +220,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:nonroot
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
           
       # SLIM
 
@@ -239,8 +244,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max 
 
       - name: Push :debug-slim (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -263,8 +268,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:debug-slim
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
 
       - name: push :nonroot-slim (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -288,6 +293,5 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:nonroot-slim
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
-
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max

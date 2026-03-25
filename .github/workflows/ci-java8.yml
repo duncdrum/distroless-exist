@@ -5,10 +5,15 @@ on:
   schedule: 
       - cron: "11 4 * * *"
 
+concurrency:
+  group: ci-java8-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   TEST_TAG: ${{ secrets.DOCKER_USERNAME }}/existdb:exist-ci
   IMAGE_TAG: release
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/existdb
+  CACHE_SCOPE: java8-release
   # EXIST_VER: 6.2.0
 
 jobs:
@@ -77,7 +82,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       - name: Build debug images for testing on CI
         uses: docker/build-push-action@v7
@@ -92,7 +97,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       - name: Build nonroot images for testing on CI
         uses: docker/build-push-action@v7
@@ -108,7 +113,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-nonroot
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       - name: Build debug-slim images for testing on CI
         uses: docker/build-push-action@v7
@@ -124,7 +129,7 @@ jobs:
           file: ./Dockerfile_j8
           load: true
           tags: ${{ env.TEST_TAG }}-debug-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       # TEST
       - name: Start exist-ci container
@@ -164,8 +169,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-j8
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-j8
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max 
 
       - name: Push :debug-j8 (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -187,8 +192,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug-j8
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-debug-j8
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
 
       - name: Push :nonroot-j8 (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -211,8 +216,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot-j8
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-nonroot-j8
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
           
       # SLIM
 
@@ -236,8 +241,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-j8-slim
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-j8-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max 
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max 
 
       - name: Push :debug-j8-slim (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -260,8 +265,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-debug-j8-slim
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-debug-j8-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
 
       - name: Push :nonroot-j8-slim (release) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -285,6 +290,5 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot-j8-slim
             ${{ env.IMAGE_NAME }}:${{ env.EXIST_VER }}-nonroot-j8-slim
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
-
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max

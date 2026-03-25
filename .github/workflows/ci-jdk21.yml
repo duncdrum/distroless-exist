@@ -75,7 +75,7 @@ jobs:
             github_token=${{ secrets.GITHUB_TOKEN }}
           build-args: |
             GITHUB_USERNAME=${{ github.actor }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}:buildcache
 
       # TEST
       - name: Start exist-ci containers
@@ -109,7 +109,7 @@ jobs:
       #   run: echo $EXIST_VER
 
       # PUSH
-      # Latest
+      # experimental
       - name: Push ${{ env.IMAGE_TAG }} to Dockerhub
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v7
@@ -128,5 +128,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}:buildcache,mode=max

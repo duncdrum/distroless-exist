@@ -34,6 +34,7 @@ target/
 !/.idea/runConfigurations
 *.iml
 .vscode
+.cursor/
 
 # OS specific files
 .DS_Store

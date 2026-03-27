@@ -54,15 +54,23 @@ RUN --mount=type=cache,id=maven,target=/root/.m2 \
         rm -f /root/.m2/settings.xml && \
         echo "Cleaned up settings.xml to prevent token exposure"'
 
-FROM maven:3-eclipse-temurin-21 AS demo
+
+FROM maven:3-eclipse-temurin-21 AS docs
 # TODO (DP) switch to exist-db once merged
 RUN git clone --single-branch --branch=docs-lucene-upgrade --depth=1 https://github.com/duncdrum/documentation.git
 
 WORKDIR /documentation
 RUN mvn clean package
 
+
+FROM ghcr.io/eeditiones/builder AS exide
+RUN git clone --recurse-submodules --single-branch --branch=feat-lucene-update --depth=1 https://github.com/eXist-db/eXide.git
+
+WORKDIR /tmp/eXide
+RUN npm i && npm run build
+
+
 FROM eclipse-temurin:21-noble
-# ARG USR=root
 # Copy eXist-db
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/LICENSE /exist/LICENSE
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/etc /exist/etc
@@ -75,7 +83,8 @@ COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/aut
 
 # Demo Tweaks
 COPY vector/conf.xml /exist/etc
-COPY --from=demo /documentation/target/exist-documentation*.xar /exist/autodeploy/00-docs.xar
+COPY --from=docs /documentation/target/exist-documentation*.xar /exist/autodeploy/00-docs.xar
+COPY --from=exide /tmp/eXide/build/*.xar /exist/autodeploy/01-ide.xar
 COPY --from=builder /exist/exist-distribution/target/onnx-models /exist/onnx-models
 
 

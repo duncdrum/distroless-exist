@@ -5,6 +5,7 @@ test/
 dump/
 !dump/exist-distribution-*/
 .git/
+node_modules/
 
 # files
 check-qemu-env.sh

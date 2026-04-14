@@ -24,12 +24,10 @@ ARG DISTRO_TAG=latest
 ARG FLAVOR=full
 
 FROM maven:3-eclipse-temurin-21 AS builder
-# TODO (DP): switch to develop once merged
-ARG BRANCH=dp-feature-lucene10
+ARG BRANCH=develop
 ARG GITHUB_USERNAME=duncdrum
 # TODO (DP) add cache mount ?
-# TODO (DP) switch to exist-db once merged
-RUN git clone --single-branch --branch=${BRANCH} --depth=1 https://github.com/duncdrum/exist.git
+RUN git clone --single-branch --branch=${BRANCH} --depth=1 https://github.com/eXist-db/exist.git
 RUN mkdir no-auto
 
 WORKDIR /exist

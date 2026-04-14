@@ -123,7 +123,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile_jdk
           build-args: |
-            BRANCH=dp-feature-lucene10
+            BRANCH=develop
             GITHUB_USERNAME=${{ github.actor }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}

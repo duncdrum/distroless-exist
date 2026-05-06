@@ -61,13 +61,6 @@ WORKDIR /documentation
 RUN mvn clean package
 
 
-FROM ghcr.io/eeditiones/builder AS exide
-RUN git clone --recurse-submodules --single-branch --branch=feat-lucene-update --depth=1 https://github.com/eXist-db/eXide.git
-
-WORKDIR /tmp/eXide
-RUN npm i && npm run build
-
-
 FROM eclipse-temurin:21-noble
 # Copy eXist-db
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/LICENSE /exist/LICENSE
@@ -82,7 +75,6 @@ COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/aut
 # Demo Tweaks
 COPY vector/conf.xml /exist/etc
 COPY --from=docs /documentation/target/exist-documentation*.xar /exist/autodeploy/00-docs.xar
-COPY --from=exide /tmp/eXide/build/*.xar /exist/autodeploy/01-ide.xar
 COPY --from=builder /exist/exist-distribution/target/onnx-models /exist/onnx-models
 
 

@@ -53,3 +53,7 @@ reports/*
 
 # GitHub token file (local builds)
 .github_token
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

@@ -55,7 +55,7 @@ RUN --mount=type=cache,id=maven,target=/root/.m2 \
 
 FROM maven:3-eclipse-temurin-21 AS docs
 # TODO (DP) switch to exist-db once merged
-RUN git clone --single-branch --branch=docs-lucene-upgrade --depth=1 https://github.com/duncdrum/documentation.git
+RUN git clone --single-branch --branch=master --depth=1 https://github.com/eXist-db/documentation.git
 
 WORKDIR /documentation
 RUN mvn clean package

@@ -1,9 +1,10 @@
 name: Java 21 :latest
-on: 
+on:
   push:
   pull_request:
-  schedule: 
+  schedule:
       - cron: "11 */8 * * *"
+  workflow_dispatch:
 
 concurrency:
   group: ci-java21-${{ github.ref }}
@@ -23,7 +24,7 @@ jobs:
     # NOTE (DP): Test on PRs and pushes
     if: github.ref == 'refs/heads/main' || github.base_ref ==  'main'
     steps:
-    
+
     # SETUP
       - uses: actions/checkout@v6
         with:
@@ -38,7 +39,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
-          platforms: linux/amd64,linux/arm64 
+          platforms: linux/amd64,linux/arm64
           # platforms: all
 
       - name: Login to Docker Hub
@@ -133,11 +134,11 @@ jobs:
           docker run -dit -p 8181:8080 -v $pwd/exist/autodeploy:/exist/autodeploy --name nonroot --rm ${{ env.TEST_TAG }}-nonroot
           sleep 35s
 
-      # - name: Wait for exist-ci to boot    
+      # - name: Wait for exist-ci to boot
       #   run: |
-      #     timeout 60 sh -c 'until docker logs exist-ci | grep -qe "Server has started"; do sleep 3; done' localhost 8080        
+      #     timeout 60 sh -c 'until docker logs exist-ci | grep -qe "Server has started"; do sleep 3; done' localhost 8080
 
-      - name: Check mem and cgroup config    
+      - name: Check mem and cgroup config
         run: |
           docker logs exist-ci | grep -w "Approximate maximum amount of memory for JVM:"
           docker logs exist-ci | grep -w "Number of processors available to JVM:"
@@ -174,7 +175,7 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max 
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
 
       - name: Push :debug (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'
@@ -222,7 +223,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-nonroot
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
-          
+
       # SLIM
 
       - name: Push :latest-slim to Dockerhub
@@ -245,7 +246,7 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-slim
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max 
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }},mode=max
 
       - name: Push :debug-slim (latest) to Dockerhub
         if: github.ref == 'refs/heads/main'

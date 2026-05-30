@@ -4,6 +4,7 @@ on:
   pull_request:
   schedule:
       - cron: "11 */8 * * *"
+  workflow_dispatch:
 
 concurrency:
   group: ci-jdk21-${{ github.ref }}

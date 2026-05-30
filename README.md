@@ -280,6 +280,7 @@ This build command uses a Java 8 (`-f`) base image, with no autodeploy EXPAth pa
 docker buildx build -t duncdrum/existdb:6.4.0-j8-slim \
   --build-arg FLAVOR=slim \
   --build-arg BRANCH=eXist-6.4.0 \
+  --build-arg CLONE_FRESH=$(date +%s) \
   --build-arg GITHUB_USERNAME=your-username \
   --secret id=github_token,src=.github_token \
   --platform linux/amd64,linux/arm64 \

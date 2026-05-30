@@ -81,6 +81,7 @@ jobs:
             github_token=${{ secrets.GITHUB_TOKEN }}
           build-args: |
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ env.CACHE_SCOPE }}
 
       # TEST
@@ -126,6 +127,7 @@ jobs:
           build-args: |
             BRANCH=develop
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}

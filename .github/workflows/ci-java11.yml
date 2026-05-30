@@ -79,6 +79,7 @@ jobs:
           build-args: |
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           load: true
@@ -93,6 +94,7 @@ jobs:
             BRANCH=master
             DISTRO_TAG=debug
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j11
@@ -109,6 +111,7 @@ jobs:
             DISTRO_TAG=nonroot
             USR=nonroot:nonroot
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j11
@@ -125,6 +128,7 @@ jobs:
             FLAVOR=slim
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           file: ./Dockerfile_j11
@@ -170,6 +174,7 @@ jobs:
           build-args: |
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -193,6 +198,7 @@ jobs:
             DISTRO_TAG=debug
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -217,6 +223,7 @@ jobs:
             USR=nonroot:nonroot
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -242,6 +249,7 @@ jobs:
             FLAVOR=slim
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -266,6 +274,7 @@ jobs:
             FLAVOR=slim
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}
@@ -291,6 +300,7 @@ jobs:
             USR=nonroot:nonroot
             BRANCH=master
             GITHUB_USERNAME=${{ github.actor }}
+            CLONE_FRESH=${{ github.run_id }}
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           builder: ${{ steps.buildx.outputs.name }}

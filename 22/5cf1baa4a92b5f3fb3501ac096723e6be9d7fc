@@ -1,0 +1,22 @@
+Dockerfile_jdk
+  s_6be644ee4e3ba8::t_2b9cb984c6afa8 69
+  s_6be644ee4e3ba8::t_4c252b64adfb93 26
+Dockerfile
+  s_6be644ee4e3ba8::t_c4d0040af1c654 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "225cf1baa4a92b5f3fb3501ac096723e6be9d7fc",
+  "prompts": {},
+  "sessions": {
+    "s_6be644ee4e3ba8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "1d41fe66-cbab-4563-b11e-5f359b4625c9",
+        "model": "composer-2.5"
+      },
+      "human_author": "duncdrum <d.paterson@me.com>"
+    }
+  }
+}

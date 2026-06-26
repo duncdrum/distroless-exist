@@ -61,7 +61,7 @@ FROM eclipse-temurin:21-noble
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/LICENSE /exist/LICENSE
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/etc /exist/etc
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/lib /exist/lib
-
+# COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/schema /exist/schema
 COPY log4j2.xml /exist/etc
 
 # Get autodeploy stuff directly

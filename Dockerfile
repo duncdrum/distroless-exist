@@ -73,6 +73,7 @@ ARG USR=root
 COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/LICENSE /exist/LICENSE
 COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/etc /exist/etc
 COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/lib /exist/lib
+# COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/schema /exist/schema
 COPY --chown=${USR} log4j2.xml /exist/etc
 
 

@@ -107,6 +107,23 @@ jobs:
             bats --tap test/bats/05*.bats
             bats --tap test/bats/vector*.bats
 
+      - name: debug logs
+        if: failure()
+        run: docker logs exist-ci | grep 'ERROR'
+
+      - name: Capture container logs on failure
+        if: failure()
+        run: |
+          echo "Capturing container stdout/stderr..."
+          docker logs exist-ci > exist.log 2>&1 || true
+
+      - name: Upload logs artifact
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: exist-${{ env.CACHE_SCOPE }}-failed-log
+          path: exist.log
+
       # DP: this dynamically set the version from develop
       # no longer necessary
       # - name: Get SemVer string from test image

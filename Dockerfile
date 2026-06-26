@@ -23,12 +23,12 @@
 ARG DISTRO_TAG=latest
 ARG FLAVOR=full
 
-FROM maven:3-eclipse-temurin-21 AS clone
+FROM maven:3.9.16-eclipse-temurin-21 AS clone
 ARG BRANCH=develop
 ARG CLONE_FRESH
 RUN git clone --single-branch --branch=${BRANCH} --depth=1 https://github.com/eXist-db/exist.git
 
-FROM maven:3-eclipse-temurin-21 AS builder
+FROM maven:3.9.16-eclipse-temurin-21 AS builder
 ARG GITHUB_USERNAME
 COPY --from=clone /exist /exist
 RUN mkdir no-auto

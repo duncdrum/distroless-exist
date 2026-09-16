@@ -1,0 +1,16 @@
+Dockerfile_jdk
+  h_ff0005bef58c9d 67
+Dockerfile
+  h_ff0005bef58c9d 79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7e6951e626a5f7b56613f916670300369ff7b760",
+  "prompts": {},
+  "humans": {
+    "h_ff0005bef58c9d": {
+      "author": "duncdrum <d.paterson@me.com>"
+    }
+  }
+}

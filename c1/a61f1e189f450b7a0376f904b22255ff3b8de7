@@ -1,0 +1,26 @@
+vector/conf-docker.xslt
+  s_3fde2d482235a3::t_8a1f96ba5ceeeb 1-53
+Dockerfile_jdk
+  s_3fde2d482235a3::t_39aa35ad1b8718 63-66
+  s_3fde2d482235a3::t_11cf99d6ac76c4 61-62,67
+test/bats/vector-spec.bats
+  s_3fde2d482235a3::t_f5cf93a9cb3313 16,21
+  s_3fde2d482235a3::t_fce21390559a87 29
+  s_3fde2d482235a3::t_ad8e3b7a7e4ecc 15,17-20,22-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c1a61f1e189f450b7a0376f904b22255ff3b8de7",
+  "prompts": {},
+  "sessions": {
+    "s_3fde2d482235a3": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "96124c03-4e03-47b5-a052-e5e11b024784",
+        "model": "grok-4.6"
+      },
+      "human_author": null
+    }
+  }
+}

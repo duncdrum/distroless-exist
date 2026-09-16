@@ -1,0 +1,21 @@
+.codacy/codacy.config.baseline.json
+  s_3fde2d482235a3::t_03b49bfd2f7a44 1-4638
+.codacy/codacy.config.json
+  s_3fde2d482235a3::t_1b587fe3aa0cba 1-4638
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8bba25d8bb2eb16316d65571f2aabc0169e1a0dc",
+  "prompts": {},
+  "sessions": {
+    "s_3fde2d482235a3": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "96124c03-4e03-47b5-a052-e5e11b024784",
+        "model": "grok-4.6"
+      },
+      "human_author": "duncdrum <d.paterson@me.com>"
+    }
+  }
+}

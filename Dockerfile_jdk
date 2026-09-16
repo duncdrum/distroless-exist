@@ -58,15 +58,21 @@ RUN --mount=type=cache,id=maven,target=/root/.m2 \
         rm -f /root/.m2/settings.xml && \
         echo "Cleaned up settings.xml to prevent token exposure"'
 
+# Overlay vector defaults onto stock conf.xml (same pattern as log4j2-docker.xslt)
+COPY vector/conf-docker.xslt /tmp/conf-docker.xslt
+RUN LIB=$(echo /exist/exist-distribution/target/exist-distribution*-dir/lib) \
+ && CONF="$LIB/../etc/conf.xml" \
+ && test -d "$LIB" && test -f "$CONF" \
+ && java -cp "$LIB/*" net.sf.saxon.Transform -s:"$CONF" -xsl:/tmp/conf-docker.xslt -o:/tmp/conf.xml \
+ && mv /tmp/conf.xml "$CONF"
 
 FROM eclipse-temurin:21-noble
 # Copy eXist-db
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/LICENSE /exist/LICENSE
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/etc /exist/etc
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/lib /exist/lib
-# COPY --from=builder --chown=${USR} /exist/exist-distribution/target/exist-distribution*-dir/schema /exist/schema
+COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/schema /exist/schema
 COPY log4j2.xml /exist/etc
-COPY vector/conf.xml /exist/etc
 
 # Get autodeploy stuff directly
 COPY --from=builder /exist/exist-distribution/target/exist-distribution*-dir/autodeploy /exist/autodeploy

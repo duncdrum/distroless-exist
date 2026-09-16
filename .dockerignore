@@ -1,5 +1,11 @@
 # folders
 .github/
+.codacy/
+.cursor/
+.claude/
+.vscode/
+.idea/
+.moderne/
 reports/
 test/
 dump/
@@ -10,5 +16,9 @@ node_modules/
 # files
 check-qemu-env.sh
 log4j2-docker.xslt
+.github_token
+.java-version
+/conf.xml
+*.log
 *.xml.bak
 .DS_Store

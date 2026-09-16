@@ -1,0 +1,19 @@
+.codacy/.gitignore
+  s_3fde2d482235a3::t_83579e0c13baa5 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1e99aa32f0a86c517ce2d0066a730f63a33cc2cc",
+  "prompts": {},
+  "sessions": {
+    "s_3fde2d482235a3": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "96124c03-4e03-47b5-a052-e5e11b024784",
+        "model": "grok-4.6"
+      },
+      "human_author": "duncdrum <d.paterson@me.com>"
+    }
+  }
+}

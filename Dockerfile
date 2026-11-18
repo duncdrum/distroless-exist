@@ -107,6 +107,7 @@ ENV JAVA_TOOL_OPTIONS="\
   -XX:+UseStringDeduplication \
   -XX:+UseContainerSupport \
   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
+  -XX:-UseBASE64Intrinsics \
   -XX:+ExitOnOutOfMemoryError"
 
 USER ${USR}
